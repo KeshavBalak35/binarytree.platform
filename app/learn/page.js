@@ -14,19 +14,13 @@ export default function LearnPage() {
   const lessons = getAllLessons();
   return (
     <main id="main-content">
-      <section className="page-hero">
+      <section className="page-hero page-hero-compact">
         <div className="container page-hero-grid">
-          <div>
-            <p className="eyebrow">Course library</p>
-            <h1>Find your next useful skill.</h1>
-            <p>Follow a complete pathway or choose the lesson you need today. Each lecture includes concise notes, practical work, flashcards, a quiz, and its original Drive source.</p>
-          </div>
-          <div className="page-hero-stat"><strong>{lessons.length}</strong><span>distinct current lectures</span></div>
+          <div><p className="eyebrow">Course library</p><h1>Learn a useful skill, step by step.</h1><p>Choose a complete pathway or find the lesson you need today. Every course includes clear notes, practical work, flashcards, and feedback.</p></div>
+          <div className="page-hero-stat"><strong>{lessons.length}</strong><span>lessons ready on any device</span></div>
         </div>
       </section>
-      <Suspense fallback={<div className="catalog-shell"><div className="container"><p className="catalog-count">Loading the curriculum…</p></div></div>}>
-        <CurriculumCatalog tracks={tracks} />
-      </Suspense>
+      <Suspense fallback={<div className="catalog-shell"><div className="container"><p className="catalog-count">Loading the curriculum…</p></div></div>}><CurriculumCatalog tracks={tracks} /></Suspense>
     </main>
   );
 }

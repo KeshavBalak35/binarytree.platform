@@ -1,5 +1,5 @@
-const CACHE_VERSION = "binarytree-v2-2026-07-25";
-const CORE_ROUTES = ["/", "/learn", "/study", "/educators", "/educators/lesson-planner", "/about", "/offline", "/manifest.webmanifest", "/app-icon.svg", "/btlogo.png"];
+const CACHE_VERSION = "binarytree-v3-2026-07-25";
+const CORE_ROUTES = ["/", "/learn", "/typing", "/study", "/educators", "/educators/lesson-planner", "/about", "/offline", "/manifest.webmanifest", "/app-icon.svg", "/btlogo.png"];
 
 async function lessonRoutes() {
   try {

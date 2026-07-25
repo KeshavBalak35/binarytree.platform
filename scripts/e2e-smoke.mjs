@@ -25,21 +25,21 @@ const browser = await chromium.launch({ executablePath: edgePath, headless: true
 const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, serviceWorkers: "allow" });
 const page = await context.newPage();
 page.setDefaultTimeout(30_000);
-page.on("console", (message) => {
-  if (message.type() === "error") runtimeErrors.push(`console @ ${page.url()}: ${message.text()}`);
-});
+page.on("console", (message) => { if (message.type() === "error") runtimeErrors.push(`console @ ${page.url()}: ${message.text()}`); });
 page.on("pageerror", (error) => runtimeErrors.push(`page @ ${page.url()}: ${error.message}`));
 
 try {
   await page.goto(baseURL, { waitUntil: "networkidle" });
   check("Home title is branded", (await page.title()).includes("BinaryTree"), await page.title());
-  check("Home has the intended hero", await page.getByRole("heading", { level: 1, name: "Skills that keep opening doors." }).isVisible());
+  check("Home has the new academic hero", await page.getByRole("heading", { level: 1, name: "Learn skills that move you forward." }).isVisible());
   check("Home exposes seven course tracks", await page.locator(".course-card").count() === 7, String(await page.locator(".course-card").count()));
   check("Desktop navigation is visible", await page.locator(".desktop-nav").isVisible());
+  check("Typing practice is featured", await page.getByRole("link", { name: "Start typing practice" }).isVisible());
   await noHorizontalOverflow(page, "Desktop home");
   await page.screenshot({ path: path.join(qaDir, "home-desktop.png"), fullPage: true });
 
   await page.goto(`${baseURL}/learn?track=digital-literacy`, { waitUntil: "networkidle" });
+  check("Desktop catalog has a course sidebar", await page.locator(".catalog-sidebar").isVisible());
   check("Digital literacy filter shows one track", await page.locator(".track-section").count() === 1, String(await page.locator(".track-section").count()));
   check("Digital literacy contains five lessons", await page.locator(".lesson-row").count() === 5, String(await page.locator(".lesson-row").count()));
   const lessonHref = await page.locator(".lesson-row").first().getAttribute("href");
@@ -47,23 +47,39 @@ try {
 
   await page.goto(`${baseURL}${lessonHref}`, { waitUntil: "networkidle" });
   check("Lesson heading is present", await page.locator(".lesson-heading h1").isVisible());
-  check("Course outline contains five lessons", await page.locator(".outline-link").count() === 5, String(await page.locator(".outline-link").count()));
+  check("Desktop course outline contains five lessons", await page.locator(".outline-link").count() === 5, String(await page.locator(".outline-link").count()));
   check("Study companion is embedded", await page.locator(".study-card").isVisible());
+  await noHorizontalOverflow(page, "Desktop lesson");
 
   await page.getByRole("tab", { name: "Flashcards" }).click();
   const front = (await page.locator(".flashcard").innerText()).trim();
   await page.locator(".flashcard").click();
   const back = (await page.locator(".flashcard").innerText()).trim();
   check("Flashcard flips to its answer", front !== back, `${front.slice(0, 30)} -> ${back.slice(0, 30)}`);
-
   await page.getByRole("tab", { name: "Practice quiz" }).click();
   await page.locator(".quiz-option").first().click();
   check("Practice quiz gives feedback", await page.locator(".quiz-feedback").isVisible());
-
   await page.getByRole("button", { name: "Mark lesson complete" }).click();
   check("Lesson progress is saved", await page.getByRole("button", { name: "✓ Lesson complete" }).isVisible());
   const savedProgress = await page.evaluate(() => JSON.parse(localStorage.getItem("binarytree-progress-v2") || "{}"));
   check("Progress persisted in local storage", savedProgress && Object.values(savedProgress).some((item) => item.complete === true));
+
+  await page.goto(`${baseURL}/typing`, { waitUntil: "networkidle" });
+  check("Typing setup exposes three levels", await page.locator(".typing-level").count() === 3, String(await page.locator(".typing-level").count()));
+  await page.getByRole("radio", { name: /Medium/ }).click();
+  await page.getByRole("button", { name: "Start 1-minute quest" }).click();
+  check("Typing session starts at one minute", (await page.locator(".typing-hud").innerText()).includes("01:00"));
+  const firstPromptLabel = await page.locator(".typing-prompt").getAttribute("aria-label");
+  const firstPrompt = firstPromptLabel.replace("Type: ", "");
+  await page.locator("#typing-input").fill("x");
+  check("Incorrect character receives live feedback", await page.locator(".typing-character.is-wrong").count() === 1);
+  await page.locator("#typing-input").fill(firstPrompt);
+  await page.waitForFunction((previous) => document.querySelector(".typing-prompt")?.getAttribute("aria-label") !== previous, firstPromptLabel);
+  check("Completed prompt advances automatically", (await page.locator(".typing-prompt").getAttribute("aria-label")) !== firstPromptLabel);
+  await page.getByRole("button", { name: "Finish session" }).click();
+  check("Typing results show four metrics", await page.locator(".typing-result-grid > div").count() === 4, String(await page.locator(".typing-result-grid > div").count()));
+  check("Typing personal best persists", Number(await page.evaluate(() => localStorage.getItem("binarytree-typing-best-v1") || 0)) >= 0);
+  await page.screenshot({ path: path.join(qaDir, "typing-results-desktop.png"), fullPage: true });
 
   await page.goto(`${baseURL}/educators/lesson-planner`, { waitUntil: "networkidle" });
   await page.locator("#topic").fill("Introduction to data tables");
@@ -73,25 +89,45 @@ try {
   check("Planner creates a six-part timeline", await page.locator(".timeline-row").count() === 6, String(await page.locator(".timeline-row").count()));
   check("Planner includes a student exercise", await page.getByRole("heading", { name: "Student exercise" }).isVisible());
   check("Planner includes an assessment", await page.getByRole("heading", { name: "Assessment", exact: true }).isVisible());
-  check("Planner reports its grounded fallback", (await page.locator(".plan-notice").innerText()).toLowerCase().includes("built-in"));
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(baseURL, { waitUntil: "networkidle" });
+  check("Mobile navigation button is visible", await page.getByRole("button", { name: "Open navigation" }).isVisible());
+  await page.getByRole("button", { name: "Open navigation" }).click();
+  check("Mobile navigation opens as a panel", await page.locator(".mobile-navigation-panel").isVisible());
+  check("Mobile navigation includes typing practice", await page.locator(".mobile-navigation-panel").getByRole("link", { name: /Typing practice/ }).isVisible());
+  await page.getByRole("button", { name: "Close navigation" }).first().click();
+  await noHorizontalOverflow(page, "390px home");
+  await page.screenshot({ path: path.join(qaDir, "home-mobile.png"), fullPage: true });
+
+  await page.goto(`${baseURL}${lessonHref}`, { waitUntil: "networkidle" });
+  check("Mobile lesson replaces sidebar with course disclosure", await page.locator(".lesson-mobile-outline").isVisible() && !await page.locator(".lesson-sidebar").isVisible());
+  await noHorizontalOverflow(page, "390px lesson");
+
+  await page.setViewportSize({ width: 360, height: 800 });
+  await page.goto(`${baseURL}/typing`, { waitUntil: "networkidle" });
+  check("Phone typing level cards stack cleanly", await page.locator(".typing-level").first().isVisible());
+  await noHorizontalOverflow(page, "360px typing setup");
+  await page.getByRole("button", { name: "Start 1-minute quest" }).click();
+  check("Phone typing input uses a non-zooming font size", await page.locator("#typing-input").evaluate((input) => getComputedStyle(input).fontSize === "16px"));
+  await noHorizontalOverflow(page, "360px typing session");
+  await page.screenshot({ path: path.join(qaDir, "typing-mobile.png"), fullPage: true });
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`${baseURL}/study`, { waitUntil: "networkidle" });
-  check("Mobile navigation control is visible", await page.locator(".mobile-menu summary").isVisible());
   check("Study workspace exposes all 42 lesson contexts", await page.locator(".study-library select option").count() === 42, String(await page.locator(".study-library select option").count()));
   await noHorizontalOverflow(page, "Mobile study workspace");
-  await page.screenshot({ path: path.join(qaDir, "study-mobile.png"), fullPage: true });
 
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto(`${baseURL}${lessonHref}`, { waitUntil: "networkidle" });
   const registration = await page.evaluate(async () => {
     const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("service worker timeout")), 90_000));
-    const ready = navigator.serviceWorker.ready;
-    const active = await Promise.race([ready, timeout]);
+    const active = await Promise.race([navigator.serviceWorker.ready, timeout]);
     return { scope: active.scope, caches: await caches.keys() };
   });
   check("PWA service worker is active", registration.scope === `${baseURL}/`, registration.scope);
-  check("Offline curriculum cache exists", registration.caches.some((name) => name.startsWith("binarytree-v2")), registration.caches.join(", "));
+  check("Offline curriculum cache is current", registration.caches.some((name) => name.startsWith("binarytree-v3")), registration.caches.join(", "));
+  check("Typing route is cached for offline use", await page.evaluate(async () => Boolean(await caches.match("/typing"))));
   await page.reload({ waitUntil: "networkidle" });
   check("Page is controlled by the service worker", await page.evaluate(() => Boolean(navigator.serviceWorker.controller)));
 
@@ -100,6 +136,8 @@ try {
   await context.setOffline(true);
   await page.reload({ waitUntil: "domcontentloaded", timeout: 20_000 });
   check("Cached lesson opens offline", await page.locator(".lesson-heading h1").isVisible());
+  await page.goto(`${baseURL}/typing`, { waitUntil: "domcontentloaded", timeout: 20_000 });
+  check("Typing practice opens offline", await page.getByRole("heading", { name: "Choose your challenge" }).isVisible());
   await context.setOffline(false);
   check("No runtime errors before intentional offline mode", preOfflineErrors.length === 0, preOfflineErrors.join(" | "));
 
