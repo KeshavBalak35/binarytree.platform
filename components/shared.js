@@ -1,4 +1,6 @@
 "use client";
+import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 
 export const C = {
@@ -31,13 +33,13 @@ export const Icons = {
 };
 
 const LogoIcon = () => (
-  <img src="/btlogo.png" alt="Binary Tree" width={24} height={24} style={{ borderRadius: 4, display: "block" }} />
+  <Image src="/btlogo.png" alt="Binary Tree" width={24} height={24} style={{ borderRadius: 4, display: "block" }} />
 );
 
 export function Sidebar({ subtitle, navItems, view, setView, user, onLogout }) {
   return (
     <div style={{ width: 200, flexShrink: 0, background: C.navy, display: "flex", flexDirection: "column", padding: 14 }}>
-      <a href="/" style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 22, cursor: "pointer", textDecoration: "none" }}>
+      <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 22, cursor: "pointer", textDecoration: "none" }}>
         <div style={{ width: 36, height: 36, background: "#fff", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", color: C.navy, flexShrink: 0 }}>
           <LogoIcon />
         </div>
@@ -45,7 +47,7 @@ export function Sidebar({ subtitle, navItems, view, setView, user, onLogout }) {
           <div style={{ color: "#fff", fontSize: 13, fontWeight: 500 }}>Binary Tree</div>
           <div style={{ color: "#9fb4d6", fontSize: 10 }}>{subtitle}</div>
         </div>
-      </a>
+      </Link>
       {navItems.map(([v, icon, lb]) => {
         const active = view === v;
         return (

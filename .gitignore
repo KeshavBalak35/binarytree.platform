@@ -8,3 +8,6 @@ out/
 *.pem
 .vercel
 npm-debug.log*
+
+*.log
+qa/

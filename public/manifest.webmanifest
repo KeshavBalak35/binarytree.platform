@@ -1,0 +1,16 @@
+{
+  "name": "BinaryTree Learning",
+  "short_name": "BinaryTree",
+  "description": "Offline-first digital skills, Python, AI, and entrepreneurship curriculum.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f5f8fa",
+  "theme_color": "#163a63",
+  "orientation": "any",
+  "categories": ["education", "productivity"],
+  "icons": [
+    { "src": "/app-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" },
+    { "src": "/btlogo.png", "sizes": "716x644", "type": "image/png", "purpose": "any" }
+  ]
+}

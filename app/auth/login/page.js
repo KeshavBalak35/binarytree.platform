@@ -1,6 +1,8 @@
 "use client";
+/* eslint-disable react-hooks/exhaustive-deps */
 export const dynamic = "force-dynamic";
-import { useState, useEffect, Suspense } from "react";
+import { useEffect, useMemo, useState, Suspense } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase-client";
 
@@ -10,7 +12,7 @@ const C = {
 };
 
 function LoginForm() {
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const router = useRouter();
   const searchParams = useSearchParams();
   const from = searchParams.get("from") || "/";
@@ -30,7 +32,7 @@ function LoginForm() {
     });
   }, []);
 
-  const redirectByRole = async (session) => {
+  async function redirectByRole(session) {
     const { data: prof } = await supabase.from("profiles").select("role").eq("id", session.user.id).single();
     const role = prof?.role || "student";
     if (from && from !== "/") { router.push(from); return; }
@@ -68,7 +70,7 @@ function LoginForm() {
   return (
     <div style={{ background: C.bg, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "system-ui,sans-serif" }}>
       <div style={{ background: "#fff", border: `0.5px solid ${C.line}`, borderRadius: 12, padding: 28, width: 340 }}>
-        <a href="/" style={{ fontSize: 11, background: "#fff", border: `0.5px solid ${C.line}`, borderRadius: 8, padding: "5px 10px", cursor: "pointer", marginBottom: 16, fontFamily: "inherit", color: C.muted, textDecoration: "none", display: "inline-block" }}>← All portals</a>
+        <Link href="/" style={{ fontSize: 11, background: "#fff", border: `0.5px solid ${C.line}`, borderRadius: 8, padding: "5px 10px", cursor: "pointer", marginBottom: 16, fontFamily: "inherit", color: C.muted, textDecoration: "none", display: "inline-block" }}>← All portals</Link>
         <div style={{ fontSize: 24, marginBottom: 10 }}>{portalIcons[portal]}</div>
         <div style={{ fontSize: 18, fontWeight: 500, color: C.ink, marginBottom: 4 }}>{portalLabels[portal]}</div>
         <div style={{ fontSize: 11, color: C.muted, marginBottom: 16 }}>

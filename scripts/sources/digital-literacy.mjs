@@ -1,0 +1,67 @@
+export const digitalLessons = [
+  {
+    slug: "digital-01-orientation", track: "Digital Literacy", trackSlug: "digital-literacy", week: 1,
+    title: "Digital Literacy Orientation", sourceUrl: "https://docs.google.com/presentation/d/1aSv-QJzdt1Adjt7kMQeIuxnS-3giPPUg/edit", duration: 45,
+    summary: "Preview the learning journey from web navigation and files to programming logic, and establish shared classroom routines for practicing on limited devices.",
+    summarySw: "Pata muhtasari wa safari ya kujifunza kutoka urambazaji wa wavuti na faili hadi mantiki ya programu, na weka taratibu za darasa kwa vifaa vichache.",
+    summaryFr: "Découvrez le parcours allant de la navigation web et des fichiers à la logique de programmation, puis établissez des routines adaptées au partage des appareils.",
+    activity: "Create a personal learning map with one current strength, one digital task you want to master, and one rule that will help a pair share a computer fairly.",
+    topics: [
+      { term: "Digital literacy", definition: "The ability to access, understand, evaluate, create, and communicate information safely and effectively with digital tools." },
+      { term: "Learning pathway", definition: "A sequenced set of skills where foundations such as navigation and file handling support later work in programming and creation." },
+      { term: "Shared-device routine", definition: "A classroom agreement that rotates driver and navigator roles so every learner thinks, speaks, and practices even when computers are limited." },
+    ],
+  },
+  {
+    slug: "digital-02-web-research", track: "Digital Literacy", trackSlug: "digital-literacy", week: 2,
+    title: "Navigating & Verifying the Web", sourceUrl: "https://docs.google.com/presentation/d/1yzm-GFL98RFv9w9upyT_CqoMA0UB-bI-/edit", duration: 60,
+    summary: "Navigate websites efficiently, judge sources by evidence rather than domain alone, cite information, and verify online or AI-generated claims before sharing them.",
+    summarySw: "Tembea kwenye tovuti kwa ufanisi, tathmini vyanzo kwa ushahidi si jina la domain pekee, nukuu taarifa na uhakiki madai ya mtandaoni au AI kabla ya kushiriki.",
+    summaryFr: "Naviguez efficacement, évaluez les sources par leurs preuves plutôt que par leur domaine, citez l’information et vérifiez les affirmations du web ou de l’IA avant de les partager.",
+    activity: "Research one community question using two independent sources. Record author, date, evidence, possible bias, and a citation, then explain why the sources agree or differ.",
+    topics: [
+      { term: "Source credibility", definition: "Trust earned through relevant expertise, transparent evidence, current information, accountable authorship, and confirmation from independent sources." },
+      { term: "Citation", definition: "A structured reference that helps readers identify and return to the source of an idea, fact, image, or quotation." },
+      { term: "Lateral reading", definition: "Opening other sources to investigate who is behind a claim, what evidence supports it, and what reliable organizations say about it." },
+    ],
+  },
+  {
+    slug: "digital-03-files", track: "Digital Literacy", trackSlug: "digital-literacy", week: 3,
+    title: "Files & File Management", sourceUrl: "https://docs.google.com/presentation/d/1YjJdKWDFwBjKGix1KvveaFIlc3pX7NL2/edit", duration: 60,
+    summary: "Recognize common image, document, video, archive, text, and table formats, then organize files so they remain findable, compatible, and safe to share.",
+    summarySw: "Tambua aina za faili za picha, hati, video, kumbukumbu, maandishi na jedwali, kisha zipange ili zipatikane kwa urahisi na ziwe salama kushiriki.",
+    summaryFr: "Reconnaissez les formats courants d’image, document, vidéo, archive, texte et tableau, puis organisez les fichiers pour qu’ils restent faciles à trouver, compatibles et sûrs à partager.",
+    activity: "Sort a mixed sample folder into a clear hierarchy. Rename each file with a useful pattern, identify which can be compressed, and choose the safest format for sharing a final report.",
+    topics: [
+      { term: "File format", definition: "The structure used to store information, indicated by an extension such as PNG, PDF, MP4, ZIP, CSV, or TXT." },
+      { term: "Compression", definition: "Reducing file size or packaging several files together to save storage and make transfer easier, sometimes with a quality tradeoff." },
+      { term: "Folder hierarchy", definition: "A logical arrangement of parent and child folders that groups related work and prevents files from becoming difficult to find." },
+    ],
+  },
+  {
+    slug: "digital-04-python-fundamentals", track: "Digital Literacy", trackSlug: "digital-literacy", week: 4,
+    title: "Programming Fundamentals", sourceUrl: "https://docs.google.com/presentation/d/1TWN7Fu8Kh7Ernd3p4Z8HzvfPXPS8WK0p/edit", duration: 60,
+    summary: "Use print statements, booleans, variables, operators, loops, and conditionals to understand how a Python program stores information and controls what happens next.",
+    summarySw: "Tumia print, boolean, vigezo, oparesheni, vitanzi na masharti kuelewa jinsi programu ya Python huhifadhi taarifa na kudhibiti hatua inayofuata.",
+    summaryFr: "Utilisez l’affichage, les booléens, variables, opérateurs, boucles et conditions pour comprendre comment un programme Python stocke l’information et contrôle son déroulement.",
+    activity: "Create a number game that stores a target, asks for a guess, and prints whether the guess is equal, too high, or too low. Repeat for three guesses.",
+    topics: [
+      { term: "Boolean", definition: "A true-or-false value, often produced by a comparison, that a program can use to decide whether a block should run." },
+      { term: "Operator", definition: "A symbol such as +, -, *, /, ==, or > that performs a calculation or comparison on values." },
+      { term: "Control flow", definition: "The path a program follows through sequential statements, conditional branches, and repeated loops." },
+    ],
+  },
+  {
+    slug: "digital-05-lists-functions", track: "Digital Literacy", trackSlug: "digital-literacy", week: 5,
+    title: "Lists, Functions & Reusable Logic", sourceUrl: "https://docs.google.com/presentation/d/1hyCQz11eJgKVCnPp9K6GKA_ysJdbIrUs/edit", duration: 60,
+    summary: "Store multiple values in indexed lists and organize repeated logic into functions with parameters, return values, and clear names.",
+    summarySw: "Hifadhi thamani nyingi katika listi zenye nafasi na panga mantiki inayojirudia katika functions zenye parameters, thamani za kurudi na majina wazi.",
+    summaryFr: "Stockez plusieurs valeurs dans des listes indexées et organisez la logique répétée dans des fonctions avec paramètres, valeurs de retour et noms clairs.",
+    activity: "Write a function that receives a list of scores and returns the average. Test it with two lists, then explain what happens when the list is empty.",
+    topics: [
+      { term: "Index", definition: "The numeric position of an item in an ordered collection; Python list indexes begin at zero." },
+      { term: "Function", definition: "A named, reusable block of code designed to perform one clear task when it is called." },
+      { term: "Parameter", definition: "A named input in a function definition that receives a concrete argument when the function is called." },
+    ],
+  },
+];
