@@ -44,7 +44,7 @@ export function Sidebar({ subtitle, navItems, view, setView, user, onLogout }) {
           <LogoIcon />
         </div>
         <div>
-          <div style={{ color: "#fff", fontFamily: "Georgia, serif", fontSize: 14, fontStyle: "italic", fontWeight: 600 }}>Patchwork</div>
+          <div style={{ color: "#fff", fontFamily: "Georgia, serif", fontSize: 14, fontStyle: "italic", fontWeight: 600 }}>Binary Tree</div>
           <div style={{ color: "#9fb4d6", fontSize: 10 }}>{subtitle}</div>
         </div>
       </Link>

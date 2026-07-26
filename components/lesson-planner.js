@@ -112,7 +112,7 @@ export function LessonPlanner() {
         ) : (
           <>
             <div className="plan-output-header">
-              <div><p className="eyebrow">Patchwork lesson plan</p><h2>{plan.title}</h2><p className="plan-output-subtitle">{plan.overview}</p></div>
+              <div><p className="eyebrow">Binary Tree lesson plan</p><h2>{plan.title}</h2><p className="plan-output-subtitle">{plan.overview}</p></div>
               <div className="plan-toolbar"><button className="button button-secondary button-small" onClick={copy}>Copy</button><button className="button button-dark button-small" onClick={() => window.print()}>Print</button></div>
             </div>
             <div className="plan-section"><h3>Learning objectives</h3><ul>{plan.objectives.map((item) => <li key={item}>{item}</li>)}</ul></div>

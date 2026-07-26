@@ -3,7 +3,7 @@ import { getAllLessons } from "@/lib/curriculum";
 
 export const metadata = {
   title: "Study companion",
-  description: "Ask grounded questions, review offline flashcards, and take practice quizzes for every Patchwork lesson.",
+  description: "Ask grounded questions, review offline flashcards, and take practice quizzes for every Binary Tree lesson.",
 };
 
 export const dynamic = "force-static";
@@ -27,7 +27,7 @@ export default function StudyPage() {
       <section className="page-hero">
         <div className="container page-hero-grid" data-reveal>
           <div>
-            <p className="eyebrow">Patchwork study companion</p>
+            <p className="eyebrow">Binary Tree study companion</p>
             <h1>Review the lesson. Then make it stick.</h1>
             <p>Ask a short grounded question when you are online. Flashcards, localized summaries, and instant-feedback quizzes remain available when you are not.</p>
           </div>

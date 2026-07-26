@@ -17,7 +17,7 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const lesson = getLessonBySlug(slug);
   if (!lesson) return { title: "Lesson not found" };
-  return { title: lesson.title, description: lesson.summary, openGraph: { title: `${lesson.title} · Patchwork`, description: lesson.summary } };
+  return { title: lesson.title, description: lesson.summary, openGraph: { title: `${lesson.title} · Binary Tree`, description: lesson.summary } };
 }
 
 function CourseOutline({ track, lesson, mobile = false }) {

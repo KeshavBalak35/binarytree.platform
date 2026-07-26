@@ -3,7 +3,7 @@ import { getAllLessons } from "@/lib/curriculum";
 
 export const metadata = {
   title: "For educators",
-  description: "Low-resource teaching tools, offline curriculum, assessments, and a ready-to-teach lesson-plan generator from Patchwork.",
+  description: "Low-resource teaching tools, offline curriculum, assessments, and a ready-to-teach lesson-plan generator from Binary Tree.",
 };
 
 export default function EducatorsPage() {
@@ -15,7 +15,7 @@ export default function EducatorsPage() {
           <div>
             <p className="eyebrow" style={{ color: "var(--mint-300)" }}>Built with instructors</p>
             <h1>Spend less time formatting. More time teaching.</h1>
-            <p>Patchwork turns the current curriculum into dependable offline lesson notes and gives instructors practical tools for classrooms with shared devices, limited materials, and inconsistent connectivity.</p>
+            <p>Binary Tree turns the current curriculum into dependable offline lesson notes and gives instructors practical tools for classrooms with shared devices, limited materials, and inconsistent connectivity.</p>
             <Link className="button button-primary" href="/educators/lesson-planner">Generate a lesson plan</Link>
           </div>
           <div className="educator-points">

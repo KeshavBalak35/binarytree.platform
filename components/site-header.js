@@ -20,9 +20,9 @@ export function SiteHeader() {
           Find a course
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m2.5 4.25 3.5 3.5 3.5-3.5" stroke="currentColor" strokeWidth="1.5" /></svg>
         </Link>
-        <Link href="/" className="brand-lockup" aria-label="Patchwork home">
+        <Link href="/" className="brand-lockup" aria-label="Binary Tree home">
           <BrandMark size={36} />
-          <span><strong>Patchwork</strong><small>Useful learning, piece by piece</small></span>
+          <span><strong>Binary Tree</strong><small>Useful learning, one step at a time</small></span>
         </Link>
         <nav className="desktop-nav" aria-label="Main navigation">
           <Link className="header-search-link" href="/learn" aria-label="Search the course library"><SearchIcon /><span>Search</span></Link>

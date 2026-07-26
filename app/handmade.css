@@ -1,4 +1,4 @@
-/* Patchwork: editorial, tactile, and deliberately imperfect. */
+/* Binary Tree: editorial, tactile, and deliberately imperfect. */
 :root {
   --ink: #243b3f; --muted: #5f6e6d; --subtle: #788381; --line: #d8d2c4; --line-strong: #aaa496;
   --paper: #fbf8ef; --soft: #f3eee1; --blue-50: #edf4f2; --blue-100: #d8e9e4; --blue-600: #315f68; --blue-700: #244d55;
@@ -42,13 +42,18 @@ h3 { letter-spacing: -.018em; }
 .brand-lockup { gap: 11px; }
 .brand-lockup strong { color: var(--navy-dark); font-family: Georgia,serif; font-size: 1.22rem; font-style: italic; letter-spacing: -.035em; }
 .brand-lockup small { color: var(--muted); font-size: .62rem; }
-.patchwork-mark { position: relative; display: block; transform: rotate(-3deg); }
-.brand-scrap { position: absolute; display: block; border: 2px solid var(--navy-dark); }
-.brand-scrap-one { inset: 4% 39% 44% 5%; border-radius: 7px 3px 6px 2px; background: var(--tomato); transform: rotate(-4deg); }
-.brand-scrap-two { inset: 38% 5% 3% 34%; border-radius: 3px 8px 2px 7px; background: var(--mustard); transform: rotate(5deg); }
-.brand-stitch { position: absolute; top: 23%; left: 37%; z-index: 2; color: var(--navy-dark); font-family: Georgia,serif; font-size: 1.5rem; font-weight: 900; line-height: 1; transform: rotate(6deg); }
-.patchwork-mark.is-inverted .brand-scrap { border-color: #fffdf7; }
-.patchwork-mark.is-inverted .brand-stitch { color: #fffdf7; }
+.binary-tree-mark { position: relative; display: block; transform: rotate(-2deg); }
+.tree-line { position: absolute; display: block; height: 2px; border-radius: 60% 40% 52% 48%; background: var(--navy-dark); transform-origin: left center; }
+.tree-trunk { top: 24%; left: 48%; width: 2px; height: 58%; transform: rotate(2deg); }
+.tree-branch { top: 47%; left: 49%; width: 41%; }
+.tree-branch-left { transform: rotate(211deg); }
+.tree-branch-right { width: 38%; transform: rotate(-32deg); }
+.tree-node { position: absolute; display: block; width: 29%; height: 27%; border: 2px solid var(--navy-dark); border-radius: 48% 55% 43% 58%; box-shadow: 1px 2px 0 rgba(36,59,63,.12); }
+.tree-node-root { top: 4%; left: 35%; background: var(--mustard); transform: rotate(5deg); }
+.tree-node-left { bottom: 2%; left: 3%; background: var(--tomato); transform: rotate(-7deg); }
+.tree-node-right { right: 1%; bottom: 7%; background: var(--leaf); transform: rotate(6deg); }
+.binary-tree-mark.is-inverted .tree-line { background: #fffdf7; }
+.binary-tree-mark.is-inverted .tree-node { border-color: #fffdf7; }
 .explore-link,.header-search-link { border: 0; border-radius: 0; background: transparent; color: var(--navy); }
 .explore-link { gap: 8px; border-bottom: 2px dashed rgba(36,77,85,.45); }
 .header-search-link { min-width: 88px; padding: 6px 2px; }

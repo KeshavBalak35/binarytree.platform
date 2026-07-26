@@ -8,7 +8,7 @@ export async function POST(request) {
 
   const { code, lessonTitle, lessonGoal } = await request.json();
 
-  const prompt = `You are an encouraging coding mentor for Patchwork, teaching digital literacy to beginners in underserved communities.
+  const prompt = `You are an encouraging coding mentor for Binary Tree, teaching digital literacy to beginners in underserved communities.
 
 A student is working on: "${lessonTitle}"
 Learning goal: "${lessonGoal}"

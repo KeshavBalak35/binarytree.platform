@@ -1,6 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="82" fill="#fbf8ef"/>
-  <path d="M72 76L283 58L300 268L86 285Z" fill="#cf624b" stroke="#18373d" stroke-width="26" stroke-linejoin="round"/>
-  <path d="M211 217L430 197L445 430L226 447Z" fill="#e3b44b" stroke="#18373d" stroke-width="26" stroke-linejoin="round"/>
-  <path d="M189 205L323 304M309 197L205 321" stroke="#18373d" stroke-width="30" stroke-linecap="round"/>
+  <rect width="512" height="512" rx="92" fill="#fbf8ef"/>
+  <path d="M253 132C255 202 255 264 257 358M249 232C211 267 172 301 132 342M260 233C300 263 339 295 382 332" fill="none" stroke="#18373d" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M194 87C195 43 239 31 276 49C313 67 319 117 289 145C259 173 196 148 194 87Z" fill="#e3b44b" stroke="#18373d" stroke-width="20"/>
+  <path d="M69 351C74 306 121 291 158 315C193 338 190 390 156 414C118 440 65 407 69 351Z" fill="#cf624b" stroke="#18373d" stroke-width="20"/>
+  <path d="M327 342C334 297 385 285 420 313C453 340 445 393 410 414C371 437 321 398 327 342Z" fill="#5e895f" stroke="#18373d" stroke-width="20"/>
 </svg>

@@ -9,7 +9,7 @@ export async function POST(request) {
   const { lessonTitle, courseTitle, courseCategory } = await request.json();
   if (!lessonTitle) return NextResponse.json({ error: "lessonTitle required" }, { status: 400 });
 
-  const prompt = `You are a curriculum designer for Patchwork, an offline-first digital literacy platform for underprivileged communities.
+  const prompt = `You are a curriculum designer for Binary Tree, an offline-first digital literacy platform for underprivileged communities.
 
 Draft a lesson called "${lessonTitle}" for the course "${courseTitle}" (${courseCategory}).
 

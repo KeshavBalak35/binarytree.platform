@@ -41,7 +41,7 @@ page.on("pageerror", (error) => runtimeErrors.push(`page @ ${page.url()}: ${erro
 
 try {
   await page.goto(baseURL, { waitUntil: "networkidle" });
-  check("Home title is branded", (await page.title()).includes("Patchwork"), await page.title());
+  check("Home title is branded", (await page.title()).includes("Binary Tree"), await page.title());
   check("Home has the handmade learning hero", await page.getByRole("heading", { level: 1, name: "Useful skills, one honest step at a time." }).isVisible());
   check("Home uses the tactile learning notebook", await page.locator(".learning-notebook").isVisible());
   await page.locator("[data-reveal].is-revealed").first().waitFor();
@@ -63,10 +63,10 @@ try {
   await page.getByPlaceholder(/I want to feel confident/).fill("I want to explain what I learn in my own words.");
   await context.setOffline(true);
   await page.getByRole("button", { name: "Submit assessment" }).click();
-  check("Offline assessment is queued locally", await page.evaluate(() => JSON.parse(localStorage.getItem("patchwork-assessment-queue-v1") || "[]").length === 1));
+  check("Offline assessment is queued locally", await page.evaluate(() => JSON.parse(localStorage.getItem("binarytree-assessment-queue-v1") || "[]").length === 1));
   check("Offline assessment gives human feedback", (await page.locator(".assessment-status").innerText()).includes("Saved on this device"));
   await context.setOffline(false);
-  await page.waitForFunction(() => JSON.parse(localStorage.getItem("patchwork-assessment-queue-v1") || "[]").length === 0);
+  await page.waitForFunction(() => JSON.parse(localStorage.getItem("binarytree-assessment-queue-v1") || "[]").length === 0);
   check("Queued assessment syncs when connection returns", (await page.locator(".assessment-status").innerText()).includes("synced successfully"));
   await noHorizontalOverflow(page, "Desktop assessment");
   runtimeErrors.length = 0;
@@ -175,7 +175,7 @@ try {
     return { scope: active.scope, caches: await caches.keys() };
   });
   check("PWA service worker is active", registration.scope === `${baseURL}/`, registration.scope);
-  check("Offline curriculum cache is current", registration.caches.some((name) => name.startsWith("patchwork-v1")), registration.caches.join(", "));
+  check("Offline curriculum cache is current", registration.caches.some((name) => name.startsWith("binarytree-v5")), registration.caches.join(", "));
   check("Typing route is cached for offline use", await page.evaluate(async () => Boolean(await caches.match("/typing"))));
   check("Assessment route is cached for offline use", await page.evaluate(async () => Boolean(await caches.match("/assessment"))));
   await page.reload({ waitUntil: "networkidle" });

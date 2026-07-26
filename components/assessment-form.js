@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxFFr8a08b-4b_HZICjebMEIrec6wZHMxPFzldFqH0wBnvT-nMMqYRdlGOOzdQV5VcWOQ/exec";
-const QUEUE_KEY = "patchwork-assessment-queue-v1";
+const QUEUE_KEY = "binarytree-assessment-queue-v1";
 
 const questions = [
   {

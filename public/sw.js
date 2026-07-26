@@ -1,4 +1,4 @@
-const CACHE_VERSION = "patchwork-v1-2026-07-25";
+const CACHE_VERSION = "binarytree-v5-2026-07-26";
 const CORE_ROUTES = ["/", "/learn", "/typing", "/study", "/assessment", "/educators", "/educators/lesson-planner", "/about", "/offline", "/manifest.webmanifest", "/app-icon.svg"];
 
 async function lessonRoutes() {
