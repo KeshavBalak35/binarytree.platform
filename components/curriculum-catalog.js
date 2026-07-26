@@ -74,9 +74,9 @@ export function CurriculumCatalog({ tracks, initialTrack = "all" }) {
           <p className="catalog-count">{visibleCount} {visibleCount === 1 ? "lesson" : "lessons"} · Notes, practice, flashcards, and quizzes work offline</p>
 
           {visibleTracks.length === 0 ? (
-            <div className="empty-state"><strong>No matching lessons.</strong><p>Try a broader topic or choose all courses.</p></div>
+            <div className="empty-state" data-reveal><strong>No matching lessons.</strong><p>Try a broader topic or choose all courses.</p></div>
           ) : visibleTracks.map((track) => (
-            <section className="track-section" id={track.slug} key={track.slug}>
+            <section className="track-section" id={track.slug} data-reveal key={track.slug}>
               <div className="track-heading">
                 <div><span className="course-card-eyebrow">{track.eyebrow}</span><h2>{track.title}</h2><p>{track.description}</p></div>
                 <span className="track-heading-meta">{track.lessons.length} lessons · {formatDuration(track.lessons.reduce((total, lesson) => total + lesson.duration, 0))}</span>

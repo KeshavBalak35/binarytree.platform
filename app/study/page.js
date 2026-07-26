@@ -25,7 +25,7 @@ export default function StudyPage() {
   return (
     <main id="main-content">
       <section className="page-hero">
-        <div className="container page-hero-grid">
+        <div className="container page-hero-grid" data-reveal>
           <div>
             <p className="eyebrow">BinaryTree study companion</p>
             <h1>Review the lesson. Then make it stick.</h1>

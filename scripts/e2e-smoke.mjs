@@ -16,7 +16,17 @@ function check(name, condition, detail = "") {
 }
 
 async function noHorizontalOverflow(page, label) {
-  const dimensions = await page.evaluate(() => ({ width: document.documentElement.clientWidth, scrollWidth: document.documentElement.scrollWidth }));
+  const dimensions = await page.evaluate(() => {
+    const width = document.documentElement.clientWidth;
+    const offenders = [...document.querySelectorAll("body *")]
+      .map((node) => {
+        const rect = node.getBoundingClientRect();
+        return { tag: node.tagName.toLowerCase(), className: String(node.className || "").slice(0, 100), left: Math.round(rect.left), right: Math.round(rect.right), width: Math.round(rect.width) };
+      })
+      .filter((item) => item.right > width + 1 || item.left < -1)
+      .slice(0, 8);
+    return { width, scrollWidth: document.documentElement.scrollWidth, offenders };
+  });
   check(`${label} has no horizontal overflow`, dimensions.scrollWidth <= dimensions.width + 1, JSON.stringify(dimensions));
 }
 
@@ -32,6 +42,10 @@ try {
   await page.goto(baseURL, { waitUntil: "networkidle" });
   check("Home title is branded", (await page.title()).includes("BinaryTree"), await page.title());
   check("Home has the new academic hero", await page.getByRole("heading", { level: 1, name: "Learn skills that move you forward." }).isVisible());
+  check("Home uses the organic learning illustration", await page.locator(".learning-scene").isVisible());
+  await page.locator("[data-reveal].is-revealed").first().waitFor();
+  check("Scroll reveal system activates visible content", await page.locator("[data-reveal].is-revealed").count() > 0);
+  check("Learning path animation is active", (await page.locator(".scene-learning-path").evaluate((node) => getComputedStyle(node).animationName)).includes("draw-path"));
   check("Home exposes seven course tracks", await page.locator(".course-card").count() === 7, String(await page.locator(".course-card").count()));
   check("Desktop navigation is visible", await page.locator(".desktop-nav").isVisible());
   check("Typing practice is featured", await page.getByRole("link", { name: "Start typing practice" }).isVisible());
@@ -100,6 +114,18 @@ try {
   await noHorizontalOverflow(page, "390px home");
   await page.screenshot({ path: path.join(qaDir, "home-mobile.png"), fullPage: true });
 
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto(baseURL, { waitUntil: "networkidle" });
+  check("Reduced-motion preference disables looping motion", await page.locator(".scene-blob-main").evaluate((node) => getComputedStyle(node).animationIterationCount === "1"));
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+
+  await page.setViewportSize({ width: 320, height: 700 });
+  await page.goto(baseURL, { waitUntil: "networkidle" });
+  await noHorizontalOverflow(page, "320px home");
+  check("Organic hero remains readable at 320px", await page.getByRole("heading", { level: 1, name: "Learn skills that move you forward." }).isVisible());
+
+  await page.setViewportSize({ width: 390, height: 844 });
+
   await page.goto(`${baseURL}${lessonHref}`, { waitUntil: "networkidle" });
   check("Mobile lesson replaces sidebar with course disclosure", await page.locator(".lesson-mobile-outline").isVisible() && !await page.locator(".lesson-sidebar").isVisible());
   await noHorizontalOverflow(page, "390px lesson");
@@ -126,7 +152,7 @@ try {
     return { scope: active.scope, caches: await caches.keys() };
   });
   check("PWA service worker is active", registration.scope === `${baseURL}/`, registration.scope);
-  check("Offline curriculum cache is current", registration.caches.some((name) => name.startsWith("binarytree-v3")), registration.caches.join(", "));
+  check("Offline curriculum cache is current", registration.caches.some((name) => name.startsWith("binarytree-v4")), registration.caches.join(", "));
   check("Typing route is cached for offline use", await page.evaluate(async () => Boolean(await caches.match("/typing"))));
   await page.reload({ waitUntil: "networkidle" });
   check("Page is controlled by the service worker", await page.evaluate(() => Boolean(navigator.serviceWorker.controller)));

@@ -180,7 +180,7 @@ export function TypingGame() {
   }
 
   return (
-    <section className="typing-game" aria-label="Key Quest typing practice">
+    <section className="typing-game" data-reveal aria-label="Key Quest typing practice">
       <div className="typing-game-heading">
         <div><span className="typing-kicker">Key Quest</span><h2>{phase === "setup" ? "Choose your challenge" : phase === "playing" ? "Type the text exactly" : "Session complete"}</h2></div>
         <div className="typing-best"><span>Personal best</span><strong>{bestWpm} WPM</strong></div>

@@ -10,7 +10,7 @@ export function StudyWorkspace({ lessons }) {
   if (!lesson) return null;
 
   return (
-    <div className="study-page-grid">
+    <div className="study-page-grid" data-reveal>
       <aside className="study-library">
         <p className="eyebrow">Focused study</p>
         <h2>Choose a lesson</h2>

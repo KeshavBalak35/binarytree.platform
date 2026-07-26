@@ -84,7 +84,7 @@ export function LessonPlanner() {
   };
 
   return (
-    <div className="planner-layout">
+    <div className="planner-layout" data-reveal>
       <form className="planner-form" onSubmit={generate}>
         <p className="eyebrow">60-minute plan</p>
         <h1>Build a ready-to-teach lesson.</h1>

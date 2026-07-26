@@ -15,7 +15,7 @@ export default function LearnPage() {
   return (
     <main id="main-content">
       <section className="page-hero page-hero-compact">
-        <div className="container page-hero-grid">
+        <div className="container page-hero-grid" data-reveal>
           <div><p className="eyebrow">Course library</p><h1>Learn a useful skill, step by step.</h1><p>Choose a complete pathway or find the lesson you need today. Every course includes clear notes, practical work, flashcards, and feedback.</p></div>
           <div className="page-hero-stat"><strong>{lessons.length}</strong><span>lessons ready on any device</span></div>
         </div>

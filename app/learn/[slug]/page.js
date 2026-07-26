@@ -51,18 +51,18 @@ export default async function LessonPage({ params }) {
         </aside>
 
         <div className="lesson-main">
-          <header className="lesson-heading">
+          <header className="lesson-heading" data-reveal>
             <div className="lesson-breadcrumb"><Link href="/learn">Courses</Link><span>/</span><span>{track.shortTitle}</span><span>/</span><span>Lesson {lesson.week}</span></div>
             <p className="eyebrow">Lesson {lesson.week} of {track.count}</p><h1>{lesson.title}</h1><p className="lesson-summary">{lesson.summary}</p>
             <div className="lesson-heading-meta"><span>{formatDuration(lesson.duration)}</span><span>{lesson.level}</span><span>Notes + practice</span><span>3 study languages</span></div>
           </header>
 
-          <details className="lesson-mobile-outline">
+          <details className="lesson-mobile-outline" data-reveal>
             <summary><span><small>Course outline</small><strong>{track.title}</strong></span><span aria-hidden="true">⌄</span></summary>
             <CourseOutline track={track} lesson={lesson} mobile />
           </details>
 
-          <div className="lesson-content-layout">
+          <div className="lesson-content-layout" data-reveal>
             <div>
               <article className="lesson-article">
                 <ReactMarkdown>{lesson.content}</ReactMarkdown>
