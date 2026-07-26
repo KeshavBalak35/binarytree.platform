@@ -34,23 +34,42 @@ await fs.mkdir(qaDir, { recursive: true });
 const browser = await chromium.launch({ executablePath: edgePath, headless: true });
 const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, serviceWorkers: "allow" });
 const page = await context.newPage();
+await context.route("https://script.google.com/**", (route) => route.fulfill({ status: 204, body: "" }));
 page.setDefaultTimeout(30_000);
 page.on("console", (message) => { if (message.type() === "error") runtimeErrors.push(`console @ ${page.url()}: ${message.text()}`); });
 page.on("pageerror", (error) => runtimeErrors.push(`page @ ${page.url()}: ${error.message}`));
 
 try {
   await page.goto(baseURL, { waitUntil: "networkidle" });
-  check("Home title is branded", (await page.title()).includes("BinaryTree"), await page.title());
-  check("Home has the new academic hero", await page.getByRole("heading", { level: 1, name: "Learn skills that move you forward." }).isVisible());
-  check("Home uses the organic learning illustration", await page.locator(".learning-scene").isVisible());
+  check("Home title is branded", (await page.title()).includes("Patchwork"), await page.title());
+  check("Home has the handmade learning hero", await page.getByRole("heading", { level: 1, name: "Useful skills, one honest step at a time." }).isVisible());
+  check("Home uses the tactile learning notebook", await page.locator(".learning-notebook").isVisible());
   await page.locator("[data-reveal].is-revealed").first().waitFor();
   check("Scroll reveal system activates visible content", await page.locator("[data-reveal].is-revealed").count() > 0);
-  check("Learning path animation is active", (await page.locator(".scene-learning-path").evaluate((node) => getComputedStyle(node).animationName)).includes("draw-path"));
+  check("Notebook scraps have natural motion", (await page.locator(".skill-scrap-one").evaluate((node) => getComputedStyle(node).animationName)).includes("scrap-bob"));
   check("Home exposes seven course tracks", await page.locator(".course-card").count() === 7, String(await page.locator(".course-card").count()));
   check("Desktop navigation is visible", await page.locator(".desktop-nav").isVisible());
   check("Typing practice is featured", await page.getByRole("link", { name: "Start typing practice" }).isVisible());
   await noHorizontalOverflow(page, "Desktop home");
   await page.screenshot({ path: path.join(qaDir, "home-desktop.png"), fullPage: true });
+
+  await page.goto(`${baseURL}/assessment`, { waitUntil: "networkidle" });
+  check("Assessment includes eight scored questions", await page.locator(".assessment-question").count() === 8, String(await page.locator(".assessment-question").count()));
+  check("Assessment exposes online status", await page.locator(".connection-note.is-online").isVisible());
+  await page.getByLabel("Student full name").fill("QA Learner");
+  await page.getByLabel("Cohort ID or class name").fill("Browser Check");
+  await page.getByLabel("Assessment stage").selectOption("Pre");
+  for (const fieldset of await page.locator(".assessment-question").all()) await fieldset.locator("label").first().click();
+  await page.getByPlaceholder(/I want to feel confident/).fill("I want to explain what I learn in my own words.");
+  await context.setOffline(true);
+  await page.getByRole("button", { name: "Submit assessment" }).click();
+  check("Offline assessment is queued locally", await page.evaluate(() => JSON.parse(localStorage.getItem("patchwork-assessment-queue-v1") || "[]").length === 1));
+  check("Offline assessment gives human feedback", (await page.locator(".assessment-status").innerText()).includes("Saved on this device"));
+  await context.setOffline(false);
+  await page.waitForFunction(() => JSON.parse(localStorage.getItem("patchwork-assessment-queue-v1") || "[]").length === 0);
+  check("Queued assessment syncs when connection returns", (await page.locator(".assessment-status").innerText()).includes("synced successfully"));
+  await noHorizontalOverflow(page, "Desktop assessment");
+  runtimeErrors.length = 0;
 
   await page.goto(`${baseURL}/learn?track=digital-literacy`, { waitUntil: "networkidle" });
   check("Desktop catalog has a course sidebar", await page.locator(".catalog-sidebar").isVisible());
@@ -116,13 +135,17 @@ try {
 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto(baseURL, { waitUntil: "networkidle" });
-  check("Reduced-motion preference disables looping motion", await page.locator(".scene-blob-main").evaluate((node) => getComputedStyle(node).animationIterationCount === "1"));
+  check("Reduced-motion preference disables looping motion", await page.locator(".notebook-sticky").evaluate((node) => getComputedStyle(node).animationIterationCount === "1"));
   await page.emulateMedia({ reducedMotion: "no-preference" });
 
   await page.setViewportSize({ width: 320, height: 700 });
   await page.goto(baseURL, { waitUntil: "networkidle" });
   await noHorizontalOverflow(page, "320px home");
-  check("Organic hero remains readable at 320px", await page.getByRole("heading", { level: 1, name: "Learn skills that move you forward." }).isVisible());
+  check("Handmade hero remains readable at 320px", await page.getByRole("heading", { level: 1, name: "Useful skills, one honest step at a time." }).isVisible());
+
+  await page.goto(`${baseURL}/assessment`, { waitUntil: "networkidle" });
+  check("Phone assessment fields use a non-zooming font size", await page.getByLabel("Student full name").evaluate((input) => getComputedStyle(input).fontSize === "16px"));
+  await noHorizontalOverflow(page, "320px assessment");
 
   await page.setViewportSize({ width: 390, height: 844 });
 
@@ -152,8 +175,9 @@ try {
     return { scope: active.scope, caches: await caches.keys() };
   });
   check("PWA service worker is active", registration.scope === `${baseURL}/`, registration.scope);
-  check("Offline curriculum cache is current", registration.caches.some((name) => name.startsWith("binarytree-v4")), registration.caches.join(", "));
+  check("Offline curriculum cache is current", registration.caches.some((name) => name.startsWith("patchwork-v1")), registration.caches.join(", "));
   check("Typing route is cached for offline use", await page.evaluate(async () => Boolean(await caches.match("/typing"))));
+  check("Assessment route is cached for offline use", await page.evaluate(async () => Boolean(await caches.match("/assessment"))));
   await page.reload({ waitUntil: "networkidle" });
   check("Page is controlled by the service worker", await page.evaluate(() => Boolean(navigator.serviceWorker.controller)));
 

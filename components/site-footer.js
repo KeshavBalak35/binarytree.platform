@@ -8,15 +8,16 @@ export function SiteFooter() {
         <div className="footer-brand">
           <div className="brand-lockup brand-lockup-inverted">
             <BrandMark size={40} inverted />
-            <span><strong>BinaryTree</strong><small>Practical technology education.</small></span>
+            <span><strong>Patchwork</strong><small>Useful learning, piece by piece.</small></span>
           </div>
-          <p>Professional, offline-ready learning for ambitious students and the educators who support them.</p>
+          <p>Practical, offline-ready learning made for real classrooms, shared devices, and imperfect internet.</p>
         </div>
         <div>
           <h2>Learn</h2>
           <Link href="/learn">Course library</Link>
           <Link href="/typing">Typing practice</Link>
           <Link href="/study">Study companion</Link>
+          <Link href="/assessment">Skills assessment</Link>
           <Link href="/learn?track=digital-literacy">Digital literacy</Link>
         </div>
         <div>
@@ -34,7 +35,7 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="container footer-bottom">
-        <span>© 2026 BinaryTree.</span>
+        <span>© 2026 Patchwork Learning.</span>
         <span>Learning should not stop when the internet does.</span>
       </div>
     </footer>

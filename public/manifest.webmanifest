@@ -1,6 +1,6 @@
 {
-  "name": "BinaryTree Learning",
-  "short_name": "BinaryTree",
+  "name": "Patchwork Learning",
+  "short_name": "Patchwork",
   "description": "Offline-first courses and skill practice in digital literacy, Python, AI, and entrepreneurship.",
   "start_url": "/",
   "scope": "/",
@@ -12,10 +12,11 @@
   "shortcuts": [
     { "name": "Course library", "short_name": "Courses", "url": "/learn", "icons": [{ "src": "/app-icon.svg", "sizes": "any", "type": "image/svg+xml" }] },
     { "name": "Typing practice", "short_name": "Typing", "url": "/typing", "icons": [{ "src": "/app-icon.svg", "sizes": "any", "type": "image/svg+xml" }] },
-    { "name": "Study companion", "short_name": "Study", "url": "/study", "icons": [{ "src": "/app-icon.svg", "sizes": "any", "type": "image/svg+xml" }] }
+    { "name": "Study companion", "short_name": "Study", "url": "/study", "icons": [{ "src": "/app-icon.svg", "sizes": "any", "type": "image/svg+xml" }] },
+    { "name": "Skills assessment", "short_name": "Assessment", "url": "/assessment", "icons": [{ "src": "/app-icon.svg", "sizes": "any", "type": "image/svg+xml" }] }
   ],
   "icons": [
     { "src": "/app-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" },
-    { "src": "/btlogo.png", "sizes": "716x644", "type": "image/png", "purpose": "any" }
+    { "src": "/app-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "monochrome" }
   ]
 }

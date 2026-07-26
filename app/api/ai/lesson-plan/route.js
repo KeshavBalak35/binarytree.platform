@@ -43,7 +43,7 @@ export async function POST(request) {
 
     if (!process.env.GEMINI_API_KEY) return NextResponse.json({ plan: fallbackPlan(topic, grade, resources), offline: true });
 
-    const prompt = `You are an expert BinaryTree curriculum designer. Create a complete, practical 60-minute lesson plan about "${topic}" for ${grade}.
+    const prompt = `You are an expert Patchwork curriculum designer. Create a complete, practical 60-minute lesson plan about "${topic}" for ${grade}.
 
 NON-NEGOTIABLE CONTEXT:
 - The classroom is low-resource and may have no internet.

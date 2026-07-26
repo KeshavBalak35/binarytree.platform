@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { HomeCourseCard } from "@/components/home-course-card";
-import { OrganicLearningScene } from "@/components/organic-learning-scene";
+import { LearningNotebook } from "@/components/learning-notebook";
 import { getAllLessons, getTracks } from "@/lib/curriculum";
 
 export const dynamic = "force-static";
@@ -20,19 +20,19 @@ export default function HomePage() {
         <span className="hero-ambient hero-ambient-one" aria-hidden="true" />
         <span className="hero-ambient hero-ambient-two" aria-hidden="true" />
         <div className="container hero-grid">
-          <div className="hero-visual" data-reveal><OrganicLearningScene lessonCount={lessons.length} /></div>
+          <div className="hero-visual" data-reveal><LearningNotebook lessonCount={lessons.length} /></div>
           <div className="hero-copy" data-reveal>
-            <p className="eyebrow">Practical learning for everyone</p>
-            <h1 className="display-title">Learn skills that <span className="hero-word-highlight">move you forward.</span></h1>
-            <p className="lead">Free, structured lessons in digital literacy, Python, machine learning, and entrepreneurship—designed to work on any device and keep working offline.</p>
+            <p className="eyebrow">Learning for real life</p>
+            <h1 className="display-title">Useful skills, <span className="hero-word-highlight">one honest step at a time.</span></h1>
+            <p className="lead">Free lessons in digital literacy, Python, machine learning, and entrepreneurship—made for real people, real classrooms, and internet that does not always cooperate.</p>
             <div className="hero-actions">
               <Link className="button button-primary" href="/learn">Start learning <span aria-hidden="true">→</span></Link>
               <Link className="button button-secondary" href="/educators">For educators</Link>
             </div>
             <ul className="hero-benefits" aria-label="Platform benefits">
-              <li><CheckIcon /> No account required</li>
-              <li><CheckIcon /> Progress stays on your device</li>
-              <li><CheckIcon /> Built for phones and shared computers</li>
+              <li><CheckIcon /> Begin without an account</li>
+              <li><CheckIcon /> Keep progress on your device</li>
+              <li><CheckIcon /> Use a phone or shared computer</li>
             </ul>
           </div>
         </div>
@@ -40,7 +40,7 @@ export default function HomePage() {
 
       <section className="trust-bar" aria-label="Curriculum summary">
         <div className="container trust-grid" data-reveal>
-          <div><strong>{lessons.length}</strong><span>complete lessons</span></div>
+          <div><strong>{lessons.length}</strong><span>lessons made to use</span></div>
           <div><strong>{tracks.length}</strong><span>guided courses</span></div>
           <div><strong>{totalHours}+</strong><span>hours of learning</span></div>
           <div><strong>3</strong><span>study languages</span></div>
@@ -52,10 +52,22 @@ export default function HomePage() {
         <span className="section-doodle section-doodle-two" aria-hidden="true">~</span>
         <div className="container">
           <div className="section-heading-row" data-reveal>
-            <div><p className="eyebrow">Choose your direction</p><h2 className="section-title" id="courses-heading">What are you curious about?</h2><p className="section-intro">Choose a pathway and build real confidence one practical lesson at a time.</p></div>
+            <div><p className="eyebrow">Choose a loose thread</p><h2 className="section-title" id="courses-heading">What do you want to get better at?</h2><p className="section-intro">Pick a path. Wander a little. Come back tomorrow. The lessons will meet you where you are.</p></div>
             <Link className="text-link" href="/learn">Explore every course <span aria-hidden="true">→</span></Link>
           </div>
           <div className="course-grid">{tracks.map((track, index) => <HomeCourseCard key={track.slug} track={track} index={index} />)}</div>
+        </div>
+      </section>
+
+      <section className="home-section assessment-invitation" aria-labelledby="assessment-invitation-heading">
+        <div className="container assessment-invitation-inner" data-reveal>
+          <span className="assessment-pencil-note" aria-hidden="true">before + after</span>
+          <div>
+            <p className="eyebrow">A useful starting point</p>
+            <h2 className="section-title" id="assessment-invitation-heading">See what you know now. Notice what changes.</h2>
+            <p className="section-intro">Take the same short skills check at the beginning and end of your program. If the connection drops, your response waits safely on this device.</p>
+          </div>
+          <Link className="button button-secondary" href="/assessment">Take the skills assessment <span aria-hidden="true">→</span></Link>
         </div>
       </section>
 
@@ -88,7 +100,7 @@ export default function HomePage() {
             <div className="approach-flourish" aria-hidden="true"><span /><span /><span /></div>
           </div>
           <ol className="approach-list">
-            <li className="approach-item reveal-delay-1" data-reveal><span className="approach-number">1</span><div><small>Understand</small><h3>Learn the idea</h3><p>Read concise notes grounded in the original BinaryTree lecture.</p></div></li>
+            <li className="approach-item reveal-delay-1" data-reveal><span className="approach-number">1</span><div><small>Understand</small><h3>Learn the idea</h3><p>Read concise notes grounded in the original curriculum lecture.</p></div></li>
             <li className="approach-item reveal-delay-2" data-reveal><span className="approach-number">2</span><div><small>Experiment</small><h3>Practice it</h3><p>Complete a realistic activity with a phone, paper, or shared computer.</p></div></li>
             <li className="approach-item reveal-delay-3" data-reveal><span className="approach-number">3</span><div><small>Remember</small><h3>Check your understanding</h3><p>Use flashcards, quizzes, and the lesson-grounded study companion.</p></div></li>
           </ol>

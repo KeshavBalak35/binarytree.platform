@@ -1,5 +1,5 @@
-const CACHE_VERSION = "binarytree-v4-2026-07-25";
-const CORE_ROUTES = ["/", "/learn", "/typing", "/study", "/educators", "/educators/lesson-planner", "/about", "/offline", "/manifest.webmanifest", "/app-icon.svg", "/btlogo.png"];
+const CACHE_VERSION = "patchwork-v1-2026-07-25";
+const CORE_ROUTES = ["/", "/learn", "/typing", "/study", "/assessment", "/educators", "/educators/lesson-planner", "/about", "/offline", "/manifest.webmanifest", "/app-icon.svg"];
 
 async function lessonRoutes() {
   try {
@@ -20,7 +20,7 @@ async function warmRoute(cache, route) {
       const html = await response.text();
       const assets = [...html.matchAll(/(?:src|href)=["']([^"']+)["']/g)]
         .map((match) => match[1])
-        .filter((url) => url.startsWith("/_next/static/") || url.startsWith("/btlogo") || url.startsWith("/app-icon"));
+        .filter((url) => url.startsWith("/_next/static/") || url.startsWith("/app-icon"));
       await Promise.allSettled([...new Set(assets)].map(async (asset) => {
         const assetResponse = await fetch(asset, { cache: "reload" });
         if (assetResponse.ok) await cache.put(asset, assetResponse);

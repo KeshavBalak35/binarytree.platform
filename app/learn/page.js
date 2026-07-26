@@ -4,7 +4,7 @@ import { getAllLessons, getTracks } from "@/lib/curriculum";
 
 export const metadata = {
   title: "Course library",
-  description: "Browse BinaryTree’s complete offline-ready curriculum in digital literacy, Python, machine learning, and entrepreneurship.",
+  description: "Browse Patchwork’s complete offline-ready curriculum in digital literacy, Python, machine learning, and entrepreneurship.",
 };
 
 export const dynamic = "force-static";

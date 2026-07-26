@@ -7,6 +7,7 @@ const links = [
   { href: "/learn", label: "Courses" },
   { href: "/typing", label: "Typing practice" },
   { href: "/study", label: "Study tools" },
+  { href: "/assessment", label: "Skills assessment" },
   { href: "/educators", label: "For educators" },
   { href: "/about", label: "Our approach" },
 ];
@@ -33,7 +34,7 @@ export function MobileNavigation() {
           <button className="mobile-navigation-scrim" aria-label="Close navigation" onClick={() => setOpen(false)} />
           <nav className="mobile-navigation-panel" id="mobile-navigation-panel" aria-label="Mobile navigation">
             <div className="mobile-navigation-heading">
-              <strong>Explore BinaryTree</strong>
+              <strong>Pick up where you left off</strong>
               <button type="button" aria-label="Close navigation" onClick={() => setOpen(false)}>×</button>
             </div>
             {links.map((link) => (

@@ -38,7 +38,7 @@ export async function POST(request) {
     const instruction = mode === "simplify"
       ? "Rewrite the prior answer more simply, using one short analogy if helpful."
       : "Answer the learner's question using only the lesson context below.";
-    const prompt = `You are BinaryTree's patient study companion for learners who may share a phone or computer and may have limited bandwidth.
+    const prompt = `You are Patchwork's patient study companion for learners who may share a phone or computer and may have limited bandwidth.
 
 ${instruction}
 - Respond in ${LANGUAGE_NAMES[language]}.

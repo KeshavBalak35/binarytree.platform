@@ -17,7 +17,7 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const lesson = getLessonBySlug(slug);
   if (!lesson) return { title: "Lesson not found" };
-  return { title: lesson.title, description: lesson.summary, openGraph: { title: `${lesson.title} · BinaryTree`, description: lesson.summary } };
+  return { title: lesson.title, description: lesson.summary, openGraph: { title: `${lesson.title} · Patchwork`, description: lesson.summary } };
 }
 
 function CourseOutline({ track, lesson, mobile = false }) {
@@ -79,7 +79,7 @@ export default async function LessonPage({ params }) {
               <div className="objectives-card"><span className="card-kicker">Learning goals</span><h2>By the end, you can…</h2><ul>{lesson.objectives.map((objective) => <li key={objective}>{objective}</li>)}</ul></div>
               <ProgressButton lessonSlug={lesson.slug} />
               <StudyCompanion lesson={studyLesson} />
-              <div className="source-card"><strong>Grounded curriculum</strong><p>These notes were written from the current BinaryTree Drive lecture.</p><a href={lesson.sourceUrl} target="_blank" rel="noreferrer">View source lecture ↗</a></div>
+              <div className="source-card"><strong>Grounded curriculum</strong><p>These notes were written from the current source lecture.</p><a href={lesson.sourceUrl} target="_blank" rel="noreferrer">View source lecture ↗</a></div>
             </div></aside>
           </div>
         </div>

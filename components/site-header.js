@@ -17,18 +17,18 @@ export function SiteHeader() {
     <header className="site-header">
       <div className="container header-inner">
         <Link className="explore-link" href="/learn">
-          Explore
+          Find a course
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="m2.5 4.25 3.5 3.5 3.5-3.5" stroke="currentColor" strokeWidth="1.5" /></svg>
         </Link>
-        <Link href="/" className="brand-lockup" aria-label="BinaryTree home">
+        <Link href="/" className="brand-lockup" aria-label="Patchwork home">
           <BrandMark size={36} />
-          <span><strong>BinaryTree</strong><small>Learning platform</small></span>
+          <span><strong>Patchwork</strong><small>Useful learning, piece by piece</small></span>
         </Link>
         <nav className="desktop-nav" aria-label="Main navigation">
           <Link className="header-search-link" href="/learn" aria-label="Search the course library"><SearchIcon /><span>Search</span></Link>
           <Link href="/typing">Typing practice</Link>
+          <Link href="/assessment">Assessment</Link>
           <Link href="/educators">For educators</Link>
-          <Link href="/about">About</Link>
         </nav>
         <div className="header-actions">
           <NetworkStatus />

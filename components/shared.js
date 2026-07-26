@@ -1,15 +1,15 @@
 "use client";
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { BrandMark } from "./brand-mark";
 
 export const C = {
-  navy: "#0f1d3a", navy2: "#16264a", blue: "#2563eb", blueSoft: "#dbeafe", blueText: "#1d4ed8",
-  ink: "#0f172a", body: "#334155", muted: "#64748b", line: "#e2e8f0", bg: "#f6f8fc",
-  white: "#ffffff", code: "#0b1b36", green: "#15803d", greenSoft: "#dcfce7",
+  navy: "#18373d", navy2: "#24464d", blue: "#cf624b", blueSoft: "#f3dfaa", blueText: "#244d55",
+  ink: "#243b3f", body: "#4f5d5b", muted: "#788381", line: "#d8d2c4", bg: "#fbf8ef",
+  white: "#fffdf7", code: "#18373d", green: "#527e5d", greenSoft: "#e7efe4",
 };
 
-export const card = { background: "#fff", border: `0.5px solid #e2e8f0`, borderRadius: 14, padding: 20 };
+export const card = { background: "#fffdf7", border: `1.5px solid #aaa496`, borderRadius: "8px 15px 7px 11px", padding: 20, boxShadow: "3px 4px 0 rgba(36,59,63,.1)" };
 
 export const ini = (n = "") =>
   n.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase() || "??";
@@ -33,7 +33,7 @@ export const Icons = {
 };
 
 const LogoIcon = () => (
-  <Image src="/btlogo.png" alt="Binary Tree" width={24} height={24} style={{ borderRadius: 4, display: "block" }} />
+  <BrandMark size={24} inverted />
 );
 
 export function Sidebar({ subtitle, navItems, view, setView, user, onLogout }) {
@@ -44,7 +44,7 @@ export function Sidebar({ subtitle, navItems, view, setView, user, onLogout }) {
           <LogoIcon />
         </div>
         <div>
-          <div style={{ color: "#fff", fontSize: 13, fontWeight: 500 }}>Binary Tree</div>
+          <div style={{ color: "#fff", fontFamily: "Georgia, serif", fontSize: 14, fontStyle: "italic", fontWeight: 600 }}>Patchwork</div>
           <div style={{ color: "#9fb4d6", fontSize: 10 }}>{subtitle}</div>
         </div>
       </Link>

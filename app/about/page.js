@@ -3,7 +3,7 @@ import { getAllLessons, getTracks } from "@/lib/curriculum";
 
 export const metadata = {
   title: "Our approach",
-  description: "How BinaryTree designs practical, offline-first technology education for low-resource classrooms.",
+  description: "How Patchwork designs practical, offline-first technology education for low-resource classrooms.",
 };
 
 export default function AboutPage() {
@@ -13,14 +13,14 @@ export default function AboutPage() {
     <main id="main-content">
       <section className="page-hero">
         <div className="container page-hero-grid" data-reveal>
-          <div><p className="eyebrow">Our approach</p><h1>Access is part of the curriculum.</h1><p>A lesson is not accessible if it disappears with the network, assumes one computer per learner, or needs equipment the classroom does not have. BinaryTree starts with those realities.</p></div>
+          <div><p className="eyebrow">Our approach</p><h1>Access is part of the curriculum.</h1><p>A lesson is not accessible if it disappears with the network, assumes one computer per learner, or needs equipment the classroom does not have. Patchwork starts with those realities.</p></div>
           <div className="page-hero-stat"><strong>{tracks.length}</strong><span>practical learning pathways</span></div>
         </div>
       </section>
       <section className="home-section">
         <div className="container about-grid" data-reveal>
           <div className="about-card"><strong>{lessons.length}</strong><span>current, distinct lecture decks transformed into searchable notes, practice, flashcards, and quizzes—with direct source links for instructors.</span></div>
-          <div><p className="eyebrow">Design principles</p><h2 className="section-title">A professional platform, built around the learner.</h2><p className="section-intro">The visual system is deliberately calm and structured. The product behavior is optimized for small screens, slower connections, and independent review.</p></div>
+          <div><p className="eyebrow">Design principles</p><h2 className="section-title">Human learning is rarely a straight line.</h2><p className="section-intro">Patchwork leaves room for wrong turns, shared screens, slower connections, and the small wins that make a skill stick.</p></div>
         </div>
       </section>
       <section className="home-section home-section-soft">

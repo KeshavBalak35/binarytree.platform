@@ -1,5 +1,5 @@
 import "./globals.css";
-import "./organic.css";
+import "./handmade.css";
 import { AppChrome } from "@/components/app-chrome";
 import { PwaRegister } from "@/components/pwa-register";
 import { MotionController } from "@/components/motion-controller";
@@ -9,26 +9,33 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (process.env.VERCEL_PROJECT_
 export const metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "BinaryTree — Learn without limits",
-    template: "%s · BinaryTree",
+    default: "Patchwork — Useful learning, piece by piece",
+    template: "%s · Patchwork",
   },
   description: "Offline-first digital skills, Python, machine learning, and entrepreneurship curriculum built for low-bandwidth classrooms.",
-  applicationName: "BinaryTree Learning",
+  applicationName: "Patchwork Learning",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "BinaryTree",
+    title: "Patchwork",
   },
   icons: {
-    icon: "/btlogo.png",
-    apple: "/btlogo.png",
+    icon: "/icon.png",
+    apple: "/icon.png",
   },
   openGraph: {
-    title: "BinaryTree — Learn without limits",
+    title: "Patchwork — Useful learning, piece by piece",
     description: "Practical technology education that keeps working when the internet cannot.",
     type: "website",
-    siteName: "BinaryTree",
+    siteName: "Patchwork",
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Patchwork — Useful learning, piece by piece." }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Patchwork — Useful learning, piece by piece",
+    description: "Practical technology education that keeps working when the internet cannot.",
+    images: ["/og.png"],
   },
 };
 
