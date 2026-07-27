@@ -4,9 +4,9 @@ import { useState } from "react";
 import { BrandMark } from "./brand-mark";
 
 export const C = {
-  navy: "#18373d", navy2: "#24464d", blue: "#cf624b", blueSoft: "#f3dfaa", blueText: "#244d55",
-  ink: "#243b3f", body: "#4f5d5b", muted: "#788381", line: "#d8d2c4", bg: "#fbf8ef",
-  white: "#fffdf7", code: "#18373d", green: "#527e5d", greenSoft: "#e7efe4",
+  navy: "#163b4d", navy2: "#244f63", blue: "#2b6f8e", blueSoft: "#deebf1", blueText: "#1f536a",
+  ink: "#203f4c", body: "#4e6872", muted: "#748b93", line: "#c8d7dc", bg: "#eef5f7",
+  white: "#fbfdfd", code: "#163b4d", green: "#527e6c", greenSoft: "#e3efeb",
 };
 
 export const card = { background: "#fffdf7", border: `1.5px solid #aaa496`, borderRadius: "8px 15px 7px 11px", padding: 20, boxShadow: "3px 4px 0 rgba(36,59,63,.1)" };

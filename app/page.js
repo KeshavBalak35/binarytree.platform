@@ -2,6 +2,7 @@ import Link from "next/link";
 import { HomeCourseCard } from "@/components/home-course-card";
 import { LearningNotebook } from "@/components/learning-notebook";
 import { getAllLessons, getTracks } from "@/lib/curriculum";
+import { PARTNERS, TEAM } from "@/lib/organization";
 
 export const dynamic = "force-static";
 
@@ -56,6 +57,17 @@ export default function HomePage() {
             <Link className="text-link" href="/learn">Explore every course <span aria-hidden="true">→</span></Link>
           </div>
           <div className="course-grid">{tracks.map((track, index) => <HomeCourseCard key={track.slug} track={track} index={index} />)}</div>
+        </div>
+      </section>
+
+      <section className="home-section home-organization" aria-labelledby="home-organization-heading">
+        <div className="container">
+          <div className="section-heading-row" data-reveal><div><p className="eyebrow">The organization behind the lessons</p><h2 className="section-title" id="home-organization-heading">Built by people. Strengthened by partners.</h2><p className="section-intro">Binary Tree is more than a course library. It is a growing team and partner network working to make practical digital education reachable.</p></div></div>
+          <div className="home-organization-grid">
+            <Link className="home-organization-card home-team-card" href="/team" data-reveal><span className="organization-card-label">Our team</span><strong>{TEAM.length} leaders across education, technology, and international programs</strong><p>Meet the people responsible for the mission and the work.</p><span className="organization-card-link">Meet the team →</span></Link>
+            <Link className="home-organization-card home-partner-card" href="/partners" data-reveal><span className="organization-card-label">Our partners</span><strong>{PARTNERS.length} organizations connecting learning with communities</strong><p>See the schools, nonprofits, and initiatives making delivery possible.</p><span className="organization-card-link">Explore the network →</span></Link>
+            <Link className="home-organization-card home-apply-card" href="/apply" data-reveal><span className="organization-card-label">Join Binary Tree</span><strong>Have a skill that could move the mission forward?</strong><p>Apply directly through the official form on the website.</p><span className="organization-card-link">Start an application →</span></Link>
+          </div>
         </div>
       </section>
 

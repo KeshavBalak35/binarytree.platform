@@ -27,16 +27,16 @@ export function SiteFooter() {
           <a href="https://github.com/KeshavBalak35/binarytree.platform">Curriculum source</a>
         </div>
         <div>
-          <h2>Platform</h2>
+          <h2>Organization</h2>
+          <Link href="/team">Our team</Link>
+          <Link href="/partners">Partners</Link>
+          <Link href="/apply">Apply to join</Link>
           <Link href="/about">Our approach</Link>
-          <span>Works after the first load</span>
-          <span>English · Kiswahili · Français</span>
-          <span>Phone, tablet, and desktop ready</span>
         </div>
       </div>
       <div className="container footer-bottom">
         <span>© 2026 Binary Tree Learning.</span>
-        <span>Learning should not stop when the internet does.</span>
+        <span>Offline ready · English, Kiswahili, Français · built for every screen</span>
       </div>
     </footer>
   );

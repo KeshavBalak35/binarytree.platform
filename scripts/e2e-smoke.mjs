@@ -35,6 +35,7 @@ const browser = await chromium.launch({ executablePath: edgePath, headless: true
 const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, serviceWorkers: "allow" });
 const page = await context.newPage();
 await context.route("https://script.google.com/**", (route) => route.fulfill({ status: 204, body: "" }));
+await context.route("https://docs.google.com/forms/**", (route) => route.fulfill({ status: 200, contentType: "text/html", body: "<!doctype html><title>Binary Tree application form</title>" }));
 page.setDefaultTimeout(30_000);
 page.on("console", (message) => { if (message.type() === "error") runtimeErrors.push(`console @ ${page.url()}: ${message.text()}`); });
 page.on("pageerror", (error) => runtimeErrors.push(`page @ ${page.url()}: ${error.message}`));
@@ -49,9 +50,26 @@ try {
   check("Notebook scraps have natural motion", (await page.locator(".skill-scrap-one").evaluate((node) => getComputedStyle(node).animationName)).includes("scrap-bob"));
   check("Home exposes seven course tracks", await page.locator(".course-card").count() === 7, String(await page.locator(".course-card").count()));
   check("Desktop navigation is visible", await page.locator(".desktop-nav").isVisible());
+  check("Official Binary Tree logo is used", await page.locator('img[src="/btlogo.png"]').first().isVisible());
+  check("Home introduces team, partners, and applications", await page.locator(".home-organization-card").count() === 3, String(await page.locator(".home-organization-card").count()));
   check("Typing practice is featured", await page.getByRole("link", { name: "Start typing practice" }).isVisible());
   await noHorizontalOverflow(page, "Desktop home");
   await page.screenshot({ path: path.join(qaDir, "home-desktop.png"), fullPage: true });
+
+  await page.goto(`${baseURL}/team`, { waitUntil: "networkidle" });
+  check("Team page lists all six leaders", await page.locator(".team-person").count() === 6, String(await page.locator(".team-person").count()));
+  check("Team page includes Abhijay's official role", await page.getByText("Director of AI, Open Source and Hackathons", { exact: true }).isVisible());
+  await noHorizontalOverflow(page, "Desktop team");
+
+  await page.goto(`${baseURL}/partners`, { waitUntil: "networkidle" });
+  check("Partners page lists all nine organizations", await page.locator(".partner-note").count() === 9, String(await page.locator(".partner-note").count()));
+  check("Partners page includes Our Moon", await page.getByRole("heading", { name: "Our Moon", exact: true }).isVisible());
+  await noHorizontalOverflow(page, "Desktop partners");
+
+  await page.goto(`${baseURL}/apply`, { waitUntil: "networkidle" });
+  check("Application page embeds the official form", (await page.locator(".application-frame").getAttribute("src"))?.includes("1FAIpQLSeQS30-93Zoh4mNZ1khcUCukazsTq8kZEBu40YxJ1hKzuN3LQ") === true);
+  check("Application page provides a new-tab fallback", await page.getByRole("link", { name: /Open the form in a new tab/ }).isVisible());
+  await noHorizontalOverflow(page, "Desktop application");
 
   await page.goto(`${baseURL}/assessment`, { waitUntil: "networkidle" });
   check("Assessment includes eight scored questions", await page.locator(".assessment-question").count() === 8, String(await page.locator(".assessment-question").count()));
@@ -82,14 +100,21 @@ try {
   check("Lesson heading is present", await page.locator(".lesson-heading h1").isVisible());
   check("Desktop course outline contains five lessons", await page.locator(".outline-link").count() === 5, String(await page.locator(".outline-link").count()));
   check("Study companion is embedded", await page.locator(".study-card").isVisible());
+  check("Lesson has a three-language overview switcher", await page.locator(".lesson-language-options button").count() === 3, String(await page.locator(".lesson-language-options button").count()));
+  const englishOverview = (await page.locator(".lesson-language-copy p").innerText()).trim();
+  await page.getByRole("button", { name: "Kiswahili", exact: true }).click();
+  check("Language switcher replaces the visible overview", (await page.locator(".lesson-language-copy p").innerText()).trim() !== englishOverview);
+  check("Detailed lesson includes guided walkthrough and common mistakes", await page.locator(".lesson-article").getByRole("heading", { name: "Guided walkthrough" }).isVisible() && await page.locator(".lesson-article").getByRole("heading", { name: "Common mistakes and fixes" }).isVisible());
   await noHorizontalOverflow(page, "Desktop lesson");
 
   await page.getByRole("tab", { name: "Flashcards" }).click();
+  check("Lesson includes six flashcards", (await page.locator(".flashcard-controls").innerText()).includes("1 of 6"));
   const front = (await page.locator(".flashcard").innerText()).trim();
   await page.locator(".flashcard").click();
   const back = (await page.locator(".flashcard").innerText()).trim();
   check("Flashcard flips to its answer", front !== back, `${front.slice(0, 30)} -> ${back.slice(0, 30)}`);
   await page.getByRole("tab", { name: "Practice quiz" }).click();
+  check("Lesson includes six practice questions", (await page.locator(".quiz-progress").innerText()).includes("Question 1 of 6"));
   await page.locator(".quiz-option").first().click();
   check("Practice quiz gives feedback", await page.locator(".quiz-feedback").isVisible());
   await page.getByRole("button", { name: "Mark lesson complete" }).click();
@@ -133,6 +158,18 @@ try {
   await noHorizontalOverflow(page, "390px home");
   await page.screenshot({ path: path.join(qaDir, "home-mobile.png"), fullPage: true });
 
+  await page.goto(`${baseURL}/team`, { waitUntil: "networkidle" });
+  check("Team page is usable on phones", await page.locator(".team-person").first().isVisible());
+  await noHorizontalOverflow(page, "390px team");
+
+  await page.goto(`${baseURL}/partners`, { waitUntil: "networkidle" });
+  check("Partners page is usable on phones", await page.locator(".partner-note").first().isVisible());
+  await noHorizontalOverflow(page, "390px partners");
+
+  await page.goto(`${baseURL}/apply`, { waitUntil: "networkidle" });
+  check("Application form is usable on phones", await page.locator(".application-frame").isVisible());
+  await noHorizontalOverflow(page, "390px application");
+
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto(baseURL, { waitUntil: "networkidle" });
   check("Reduced-motion preference disables looping motion", await page.locator(".notebook-sticky").evaluate((node) => getComputedStyle(node).animationIterationCount === "1"));
@@ -175,9 +212,10 @@ try {
     return { scope: active.scope, caches: await caches.keys() };
   });
   check("PWA service worker is active", registration.scope === `${baseURL}/`, registration.scope);
-  check("Offline curriculum cache is current", registration.caches.some((name) => name.startsWith("binarytree-v5")), registration.caches.join(", "));
+  check("Offline curriculum cache is current", registration.caches.some((name) => name.startsWith("binarytree-v6")), registration.caches.join(", "));
   check("Typing route is cached for offline use", await page.evaluate(async () => Boolean(await caches.match("/typing"))));
   check("Assessment route is cached for offline use", await page.evaluate(async () => Boolean(await caches.match("/assessment"))));
+  check("Team and partners routes are cached for offline use", await page.evaluate(async () => Boolean(await caches.match("/team")) && Boolean(await caches.match("/partners"))));
   await page.reload({ waitUntil: "networkidle" });
   check("Page is controlled by the service worker", await page.evaluate(() => Boolean(navigator.serviceWorker.controller)));
 

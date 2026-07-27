@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
+import { LessonLanguageSwitcher } from "@/components/lesson-language-switcher";
 import { ProgressButton } from "@/components/progress-button";
 import { StudyCompanion } from "@/components/study-companion";
 import { getAdjacentLessons, getAllLessons, getLessonBySlug, getTrackBySlug } from "@/lib/curriculum";
@@ -53,8 +54,9 @@ export default async function LessonPage({ params }) {
         <div className="lesson-main">
           <header className="lesson-heading" data-reveal>
             <div className="lesson-breadcrumb"><Link href="/learn">Courses</Link><span>/</span><span>{track.shortTitle}</span><span>/</span><span>Lesson {lesson.week}</span></div>
-            <p className="eyebrow">Lesson {lesson.week} of {track.count}</p><h1>{lesson.title}</h1><p className="lesson-summary">{lesson.summary}</p>
-            <div className="lesson-heading-meta"><span>{formatDuration(lesson.duration)}</span><span>{lesson.level}</span><span>Notes + practice</span><span>3 study languages</span></div>
+            <p className="eyebrow">Lesson {lesson.week} of {track.count}</p><h1>{lesson.title}</h1>
+            <LessonLanguageSwitcher summary={lesson.summary} summarySw={lesson.summarySw} summaryFr={lesson.summaryFr} translationStatus={lesson.translationStatus} />
+            <div className="lesson-heading-meta"><span>{formatDuration(lesson.duration)}</span><span>{lesson.level}</span><span>Detailed notes</span><span>6 flashcards + 6 questions</span></div>
           </header>
 
           <details className="lesson-mobile-outline" data-reveal>
@@ -66,7 +68,6 @@ export default async function LessonPage({ params }) {
             <div>
               <article className="lesson-article">
                 <ReactMarkdown>{lesson.content}</ReactMarkdown>
-                <div className="translation-note"><strong>Translation status:</strong> {lesson.translationStatus}. The English notes are grounded in the source deck; localized summaries are clearly marked as drafts.</div>
                 <div className="lesson-actions"><a className="button button-secondary button-small" href={lesson.sourceUrl} target="_blank" rel="noreferrer">Open lecture deck ↗</a><Link className="button button-ghost button-small" href="/study">Study in focused mode</Link></div>
               </article>
               <nav className="lesson-nav" aria-label="Adjacent lessons">

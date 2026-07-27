@@ -9,7 +9,10 @@ const links = [
   { href: "/study", label: "Study tools" },
   { href: "/assessment", label: "Skills assessment" },
   { href: "/educators", label: "For educators" },
+  { href: "/team", label: "Our team" },
+  { href: "/partners", label: "Partners" },
   { href: "/about", label: "Our approach" },
+  { href: "/apply", label: "Apply to join" },
 ];
 
 export function MobileNavigation() {
@@ -42,7 +45,7 @@ export function MobileNavigation() {
                 {link.label}<span aria-hidden="true">›</span>
               </Link>
             ))}
-            <Link className="button button-primary" href="/learn" onClick={() => setOpen(false)}>Start learning</Link>
+            <Link className="button button-primary" href="/apply" onClick={() => setOpen(false)}>Apply to join Binary Tree</Link>
           </nav>
         </>
       )}

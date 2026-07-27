@@ -16,9 +16,10 @@ for (const file of files) {
   slugs.add(data.slug);
   if (!String(data.sourceUrl || "").startsWith("https://docs.google.com/")) errors.push(`${file}: invalid Drive source URL`);
   if (!Array.isArray(data.keyIdeas) || data.keyIdeas.length < 3) errors.push(`${file}: needs at least 3 key ideas`);
-  if (!Array.isArray(data.flashcards) || data.flashcards.length < 3) errors.push(`${file}: needs at least 3 flashcards`);
-  if (!Array.isArray(data.quiz) || data.quiz.length < 3) errors.push(`${file}: needs at least 3 quiz questions`);
-  if (!content.includes("Muhtasari wa Kiswahili") || !content.includes("Résumé français")) errors.push(`${file}: localized draft sections missing`);
+  if (!Array.isArray(data.flashcards) || data.flashcards.length < 6) errors.push(`${file}: needs at least 6 flashcards`);
+  if (!Array.isArray(data.quiz) || data.quiz.length < 6) errors.push(`${file}: needs at least 6 quiz questions`);
+  if (!content.includes("## Guided walkthrough") || !content.includes("## Common mistakes and fixes")) errors.push(`${file}: detailed lesson structure missing`);
+  if (content.includes("Muhtasari wa Kiswahili") || content.includes("Résumé français")) errors.push(`${file}: repeated localized sections should use the language switcher instead`);
 }
 
 if (files.length !== 42) errors.push(`expected 42 distinct current lessons, found ${files.length}`);
@@ -26,4 +27,4 @@ if (errors.length) {
   console.error(errors.join("\n"));
   process.exit(1);
 }
-console.log(`Validated ${files.length} lessons: unique slugs, Drive sources, trilingual summaries, flashcards, and quizzes.`);
+console.log(`Validated ${files.length} lessons: unique slugs, Drive sources, language-switcher summaries, detailed notes, 6+ flashcards, and 6+ quiz questions.`);
