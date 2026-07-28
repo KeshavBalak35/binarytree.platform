@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxFFr8a08b-4b_HZICjebMEIrec6wZHMxPFzldFqH0wBnvT-nMMqYRdlGOOzdQV5VcWOQ/exec";
@@ -77,11 +78,24 @@ async function sendAssessment(payload) {
   });
 }
 
+function localLearningPlan(score) {
+  return {
+    title: score >= 7 ? "Strong foundation—choose a stretch lesson." : score >= 4 ? "You have a useful foundation to build on." : "Start with one small, practical skill.",
+    summary: `You answered ${score} of ${questions.length} scored questions correctly. This is a starting point, not a label.`,
+    nextSteps: ["Choose one lesson below.", "Complete its practice activity.", "Use the flashcards and quiz before moving on."],
+    recommendations: [],
+    offline: true,
+  };
+}
+
 export function AssessmentForm() {
   const [online, setOnline] = useState(true);
   const [queueCount, setQueueCount] = useState(0);
   const [status, setStatus] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [assessmentResult, setAssessmentResult] = useState(null);
+  const [learningPlan, setLearningPlan] = useState(null);
+  const [coachLoading, setCoachLoading] = useState(false);
 
   const syncQueue = useCallback(async () => {
     if (!navigator.onLine) return;
@@ -139,7 +153,11 @@ export function AssessmentForm() {
       answers,
       submittedAt: new Date().toISOString(),
     };
+    const missedSkills = questions.filter((question) => answers[question.id] !== question.answer).map((question) => question.prompt);
+    const reflection = String(answers.q9 || "");
 
+    setAssessmentResult({ score, total: questions.length });
+    setLearningPlan(null);
     setSubmitting(true);
     setStatus("");
     try {
@@ -165,6 +183,24 @@ export function AssessmentForm() {
     } finally {
       setSubmitting(false);
     }
+
+    setCoachLoading(true);
+    try {
+      if (!navigator.onLine) throw new Error("offline");
+      const response = await fetch("/api/ai/coach", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "assessment", score, missedSkills, reflection }),
+      });
+      const plan = await response.json();
+      if (!response.ok || !plan.title) throw new Error("unavailable");
+      setLearningPlan(plan);
+    } catch {
+      setLearningPlan(localLearningPlan(score));
+    } finally {
+      setCoachLoading(false);
+      window.setTimeout(() => document.querySelector(".assessment-ai-plan")?.scrollIntoView({ behavior: "smooth", block: "center" }), 50);
+    }
   }
 
   return (
@@ -176,6 +212,28 @@ export function AssessmentForm() {
       </div>
 
       {status && <div className="assessment-status" role="status" aria-live="polite"><span aria-hidden="true">✓</span><p>{status}</p></div>}
+
+      {assessmentResult && (
+        <section className="assessment-ai-plan" aria-live="polite">
+          <div className="assessment-score-orb"><strong>{assessmentResult.score}</strong><span>out of {assessmentResult.total}</span></div>
+          <div className="assessment-ai-content">
+            <p className="eyebrow"><span aria-hidden="true">✦</span> Your AI learning plan</p>
+            {coachLoading ? <div className="assessment-ai-loading"><span /><span /><span /> Building a private next-step plan from your results…</div> : learningPlan && (
+              <>
+                <h2>{learningPlan.title}</h2>
+                <p>{learningPlan.summary}</p>
+                <ol>{learningPlan.nextSteps?.map((step) => <li key={step}>{step}</li>)}</ol>
+                {learningPlan.recommendations?.length > 0 ? (
+                  <div className="assessment-recommendations">
+                    {learningPlan.recommendations.map((lesson) => <Link href={`/learn/${lesson.slug}`} key={lesson.slug}><span><small>{lesson.track}</small><strong>{lesson.title}</strong><p>{lesson.reason}</p></span><span aria-hidden="true">→</span></Link>)}
+                  </div>
+                ) : <div className="assessment-plan-actions"><Link className="button button-primary button-small" href="/learn">Explore beginner lessons</Link><Link className="button button-secondary button-small" href="/study">Open study tools</Link></div>}
+                <small className="assessment-ai-privacy">Your name and cohort are never sent to the AI. Only your score, missed topics, and learning goal are used for this plan.</small>
+              </>
+            )}
+          </div>
+        </section>
+      )}
 
       <form className="assessment-form" onSubmit={handleSubmit}>
         <section className="assessment-paper assessment-identity">

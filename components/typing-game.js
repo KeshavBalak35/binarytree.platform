@@ -72,6 +72,17 @@ function calculateStats(totalTyped, correctTyped, elapsedMs) {
   };
 }
 
+function localTypingCoach(result) {
+  const highAccuracy = result.accuracy >= 96;
+  return {
+    title: highAccuracy ? "Your accuracy is ready for a little more speed." : "Slow down slightly and protect accuracy.",
+    summary: `You finished at ${result.wpm} WPM with ${result.accuracy}% accuracy. ${highAccuracy ? "That consistency gives you room to stretch." : "Clean keystrokes will raise your speed more reliably than rushing."}`,
+    nextSteps: highAccuracy ? ["Repeat once at the same level.", "Keep your hands relaxed.", "Move up if accuracy stays above 94%."] : ["Repeat the same level.", "Pause after each mistake.", "Aim for 95% accuracy before moving up."],
+    recommendedLevel: highAccuracy && result.level !== "hard" ? (result.level === "easy" ? "medium" : "hard") : result.level,
+    offline: true,
+  };
+}
+
 function CharacterPrompt({ prompt, typed }) {
   return (
     <p className="typing-prompt" aria-label={`Type: ${prompt}`}>
@@ -93,6 +104,8 @@ export function TypingGame() {
   const [timeLeft, setTimeLeft] = useState(SESSION_SECONDS);
   const [liveStats, setLiveStats] = useState({ wpm: 0, accuracy: 100 });
   const [result, setResult] = useState(null);
+  const [coach, setCoach] = useState(null);
+  const [coachLoading, setCoachLoading] = useState(false);
   const bestWpm = useSyncExternalStore(subscribeToBestScore, getBestScore, () => 0);
   const startedAtRef = useRef(0);
   const timerRef = useRef(null);
@@ -101,6 +114,26 @@ export function TypingGame() {
   const mistakesRef = useRef(0);
   const completedWordsRef = useRef(0);
   const inputRef = useRef(null);
+
+  const requestTypingCoach = useCallback(async (sessionResult) => {
+    setCoach(null);
+    setCoachLoading(true);
+    try {
+      if (!navigator.onLine) throw new Error("offline");
+      const response = await fetch("/api/ai/coach", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "typing", result: sessionResult }),
+      });
+      const data = await response.json();
+      if (!response.ok || !data.title) throw new Error("unavailable");
+      setCoach(data);
+    } catch {
+      setCoach(localTypingCoach(sessionResult));
+    } finally {
+      setCoachLoading(false);
+    }
+  }, []);
 
   const finishSession = useCallback(() => {
     if (timerRef.current) window.clearInterval(timerRef.current);
@@ -114,13 +147,14 @@ export function TypingGame() {
     };
     setResult(finalResult);
     setPhase("results");
+    requestTypingCoach(finalResult);
     try {
       if (stats.wpm > getBestScore()) {
         window.localStorage.setItem(BEST_SCORE_KEY, String(stats.wpm));
         window.dispatchEvent(new Event(BEST_SCORE_EVENT));
       }
     } catch {}
-  }, [level]);
+  }, [level, requestTypingCoach]);
 
   useEffect(() => {
     if (phase !== "playing") return undefined;
@@ -149,6 +183,8 @@ export function TypingGame() {
     setTimeLeft(SESSION_SECONDS);
     setLiveStats({ wpm: 0, accuracy: 100 });
     setResult(null);
+    setCoach(null);
+    setCoachLoading(false);
     setPhase("playing");
   }
 
@@ -175,6 +211,8 @@ export function TypingGame() {
     if (timerRef.current) window.clearInterval(timerRef.current);
     setPhase("setup");
     setResult(null);
+    setCoach(null);
+    setCoachLoading(false);
     setTyped("");
     setTimeLeft(SESSION_SECONDS);
   }
@@ -229,6 +267,16 @@ export function TypingGame() {
             <div><span>Mistakes</span><strong>{result.mistakes}</strong></div>
           </div>
           <p className="typing-result-message">{LEVEL_MESSAGES[result.level]}</p>
+          <section className="typing-ai-coach" aria-live="polite">
+            <div className="typing-ai-coach-heading"><span aria-hidden="true">✦</span><div><small>AI practice coach</small><strong>{coachLoading ? "Reading your session…" : coach?.title}</strong></div></div>
+            {coachLoading ? <div className="typing-coach-loading"><span /><span /><span /> Building your next round…</div> : coach && (
+              <>
+                <p>{coach.summary}</p>
+                <ol>{coach.nextSteps?.map((step) => <li key={step}>{step}</li>)}</ol>
+                <button className="typing-coach-level" type="button" onClick={() => { setLevel(coach.recommendedLevel); returnToSetup(); }}><span>Recommended next level</span><strong>{LEVELS.find((item) => item.id === coach.recommendedLevel)?.name || "Easy"} →</strong></button>
+              </>
+            )}
+          </section>
           <div className="typing-result-actions"><button className="button button-primary" type="button" onClick={startSession}>Try again</button><button className="button button-secondary" type="button" onClick={returnToSetup}>Change level</button><Link className="text-link" href="/learn">Browse courses →</Link></div>
         </div>
       )}

@@ -9,7 +9,8 @@
     "lint": "eslint app components lib",
     "content:generate": "node scripts/generate-curriculum.mjs",
     "content:check": "node scripts/validate-content.mjs",
-    "test:e2e": "node scripts/e2e-smoke.mjs"
+    "test:e2e": "node scripts/e2e-smoke.mjs",
+    "test:ai": "node scripts/verify-ai-flows.mjs"
   },
   "dependencies": {
     "@next/third-parties": "^16.2.11",
