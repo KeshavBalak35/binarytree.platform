@@ -59,10 +59,10 @@ export function AiCopilot() {
         body: JSON.stringify({ question: prompt, pathname, history: nextMessages.slice(-6).map(({ role, text }) => ({ role, text })) }),
       });
       const data = await response.json();
-      if (!response.ok || !data.answer) throw new Error("unavailable");
-      setMessages((current) => [...current, { role: "assistant", text: data.answer, actions: data.actions || [], offline: data.offline }]);
+      if (!response.ok || !data.answer) throw new Error(data.error || "The live AI is unavailable.");
+      setMessages((current) => [...current, { role: "assistant", text: data.answer, actions: data.actions || [] }]);
     } catch {
-      setMessages((current) => [...current, { role: "assistant", text: "I can’t reach the live AI right now. Your lessons, flashcards, quizzes, progress, assessment queue, and typing practice still work offline.", actions: [{ label: "Browse downloaded lessons", href: "/learn", detail: "Continue with the offline-ready curriculum." }], offline: true }]);
+      setMessages((current) => [...current, { role: "assistant", text: "The live AI could not answer that request right now. Please try again in a moment.", actions: [], error: true }]);
     } finally {
       setLoading(false);
     }
@@ -90,7 +90,7 @@ export function AiCopilot() {
             {messages.map((message, index) => (
               <div className={`ai-copilot-message ${message.role === "user" ? "is-user" : ""}`} key={`${message.role}-${index}`}>
                 <p>{message.text}</p>
-                {message.offline && <small className="ai-copilot-offline">Offline guidance</small>}
+                {message.error && <small className="ai-copilot-offline">Live AI unavailable</small>}
                 {message.actions?.length > 0 && (
                   <div className="ai-copilot-actions">
                     {message.actions.map((action) => (
