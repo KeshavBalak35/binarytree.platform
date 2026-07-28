@@ -65,7 +65,7 @@ Return ONLY valid JSON with exactly these keys:
 }
 The timeline must total exactly 60 minutes and include a warm-up, explicit teaching, demonstration, collaborative practice, an individual exercise, and wrap-up. Keep language concrete and teacher-ready.`;
 
-    const generation = await generateAIText(prompt);
+    const generation = await generateAIText(prompt, { json: true, temperature: 0.1 });
     const text = generation.text;
     const match = text.match(/\{[\s\S]*\}/);
     if (!match) throw new Error("invalid response");
