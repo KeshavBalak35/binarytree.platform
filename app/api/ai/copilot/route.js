@@ -129,6 +129,8 @@ export async function POST(request) {
 
   const lessons = getAllLessons();
   const fallback = localResponse(question, pathname, lessons);
+  const directPersonAnswer = mentionedTeamMember(question) && !NAVIGATION_INTENT.test(question);
+  if (directPersonAnswer) return NextResponse.json({ ...fallback, offline: false, grounded: true, provider: "site-data" });
   if (!isAIConfigured()) return NextResponse.json({ ...fallback, offline: true });
 
   const lessonCatalog = lessons.map((lesson) => `${`/learn/${lesson.slug}`} | ${TRACK_META[lesson.trackSlug]?.shortTitle || lesson.track} | ${lesson.title} | ${String(lesson.summary).slice(0, 180)}`).join("\n");
