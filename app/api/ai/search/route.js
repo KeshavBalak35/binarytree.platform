@@ -36,15 +36,21 @@ function localRecommendations(query, lessons) {
 }
 
 export async function POST(request) {
+  let body;
   try {
-    const body = await request.json();
-    const query = String(body.query || "").trim().slice(0, 240);
-    if (query.length < 3) return NextResponse.json({ error: "Describe what you want to learn." }, { status: 400 });
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "A valid search request is required." }, { status: 400 });
+  }
 
-    const lessons = getAllLessons();
-    const fallback = localRecommendations(query, lessons);
-    if (!isAIConfigured()) return NextResponse.json({ recommendations: fallback, offline: true });
+  const query = String(body.query || "").trim().slice(0, 240);
+  if (query.length < 3) return NextResponse.json({ error: "Describe what you want to learn." }, { status: 400 });
 
+  const lessons = getAllLessons();
+  const fallback = localRecommendations(query, lessons);
+  if (!isAIConfigured()) return NextResponse.json({ recommendations: fallback, offline: true, providerStatus: "not_configured" });
+
+  try {
     const catalog = lessons.map((lesson) => {
       const track = TRACK_META[lesson.trackSlug]?.shortTitle || lesson.track || "Course";
       return `${lesson.slug} | ${track} | ${lesson.title} | ${String(lesson.summary || "").slice(0, 220)}`;
@@ -83,7 +89,7 @@ ${catalog}`;
     }
 
     return NextResponse.json({ recommendations, offline: false, provider: "apifreellm" });
-  } catch {
-    return NextResponse.json({ error: "The course guide is temporarily unavailable." }, { status: 503 });
+  } catch (error) {
+    return NextResponse.json({ recommendations: fallback, offline: true, providerStatus: error?.code || "unavailable" });
   }
 }
