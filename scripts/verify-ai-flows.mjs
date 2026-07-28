@@ -43,9 +43,6 @@ try {
   await noOverflow(page, "Desktop copilot");
   await page.screenshot({ path: path.join(outputDir, "binary-tree-ai-desktop.png") });
 
-  const copilotAPI = await page.request.post(`${baseURL}/api/ai/copilot`, { data: { question: "Where should a complete beginner start?", pathname: "/learn" } });
-  const copilotData = await copilotAPI.json();
-  check("Copilot API returns live Groq", copilotAPI.ok() && copilotData.provider === "groq" && copilotData.offline === false, JSON.stringify(copilotData).slice(0, 300));
 
   await page.goto(`${baseURL}/assessment`, { waitUntil: "networkidle" });
   await page.getByLabel("Student full name").fill("QA Learner");
@@ -53,7 +50,10 @@ try {
   await page.getByLabel("Assessment stage").selectOption("Pre");
   for (const fieldset of await page.locator(".assessment-question").all()) await fieldset.locator("label").first().click();
   await page.getByPlaceholder(/I want to feel confident/).fill("I want to learn practical computer skills for work.");
+  const assessmentResponsePromise = page.waitForResponse((response) => response.url().endsWith("/api/ai/coach") && response.request().method() === "POST");
   await page.getByRole("button", { name: "Submit assessment" }).click();
+  const assessmentPayload = await (await assessmentResponsePromise).json();
+  check("Assessment plan uses live Groq", assessmentPayload.provider === "groq" && assessmentPayload.offline === false, JSON.stringify(assessmentPayload).slice(0, 300));
   await page.locator(".assessment-ai-content h2").waitFor();
   check("Assessment shows the score", (await page.locator(".assessment-score-orb").innerText()).includes("out of 8"));
   check("Assessment creates three AI course recommendations", await page.locator(".assessment-recommendations a").count() === 3, String(await page.locator(".assessment-recommendations a").count()));
@@ -64,16 +64,16 @@ try {
   await page.getByRole("radio", { name: /Easy/ }).click();
   await page.getByRole("button", { name: "Start 1-minute quest" }).click();
   await page.locator("#typing-input").fill("sad");
+  const typingResponsePromise = page.waitForResponse((response) => response.url().endsWith("/api/ai/coach") && response.request().method() === "POST");
   await page.getByRole("button", { name: "Finish session" }).click();
+  const typingPayload = await (await typingResponsePromise).json();
+  check("Typing results use live Groq", typingPayload.provider === "groq" && typingPayload.offline === false, JSON.stringify(typingPayload).slice(0, 300));
   await page.locator(".typing-ai-coach-heading strong").filter({ hasNotText: "Reading your session" }).waitFor();
   check("Typing results include an AI coach", await page.locator(".typing-ai-coach").isVisible());
   check("Typing coach gives three next steps", await page.locator(".typing-ai-coach li").count() === 3, String(await page.locator(".typing-ai-coach li").count()));
   check("Typing coach offers a next level action", await page.locator(".typing-coach-level").isVisible());
   await page.screenshot({ path: path.join(outputDir, "binary-tree-typing-ai.png"), fullPage: true });
 
-  const typingAPI = await page.request.post(`${baseURL}/api/ai/coach`, { data: { type: "typing", result: { wpm: 24, rawWpm: 27, accuracy: 94, mistakes: 4, words: 20, level: "easy" } } });
-  const typingData = await typingAPI.json();
-  check("Typing coach API returns live Groq", typingAPI.ok() && typingData.provider === "groq" && typingData.offline === false, JSON.stringify(typingData).slice(0, 300));
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`${baseURL}/learn`, { waitUntil: "networkidle" });
