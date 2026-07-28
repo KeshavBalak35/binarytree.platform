@@ -1,5 +1,6 @@
 import "./globals.css";
 import "./handmade.css";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { AppChrome } from "@/components/app-chrome";
 import { PwaRegister } from "@/components/pwa-register";
 import { MotionController } from "@/components/motion-controller";
@@ -54,6 +55,7 @@ export default function RootLayout({ children }) {
         <MotionController />
         <AppChrome>{children}</AppChrome>
       </body>
+      <GoogleAnalytics gaId="G-F17WLS30RW" />
     </html>
   );
 }
