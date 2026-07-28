@@ -88,7 +88,7 @@ ${catalog}`;
       if (!seen.has(item.slug)) recommendations.push(item);
     }
 
-    return NextResponse.json({ recommendations, offline: false, provider: "apifreellm" });
+    return NextResponse.json({ recommendations, offline: false, provider: "groq" });
   } catch (error) {
     return NextResponse.json({ recommendations: fallback, offline: true, providerStatus: error?.code || "unavailable", providerHttpStatus: Number(error?.status) || null });
   }

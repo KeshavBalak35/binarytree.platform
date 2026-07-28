@@ -54,7 +54,7 @@ ${context}
 Learner request: ${question}`;
 
     const result = await generateAIText(prompt);
-    return NextResponse.json({ answer: result.text.slice(0, 1400), offline: false, provider: "apifreellm" });
+    return NextResponse.json({ answer: result.text.slice(0, 1400), offline: false, provider: "groq" });
   } catch {
     if (lesson.summary) return NextResponse.json({ answer: fallbackAnswer(lesson, language), offline: true });
     return NextResponse.json({ error: "The study companion is temporarily unavailable." }, { status: 503 });

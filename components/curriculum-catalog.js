@@ -59,7 +59,7 @@ export function CurriculumCatalog({ tracks, initialTrack = "all" }) {
     if (request.length < 3 || aiLoading) return;
     setAiLoading(true);
     setAiResults([]);
-    setAiMessage("The free AI guide may take about 25 seconds. Your normal search still works instantly.");
+    setAiMessage("The AI guide is finding the best starting points. Your normal search still works instantly.");
 
     try {
       const response = await fetch("/api/ai/search", {
