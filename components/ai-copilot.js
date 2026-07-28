@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
 
 function pageWelcome(pathname) {
   if (pathname.startsWith("/learn/")) return "I’m grounded in Binary Tree’s curriculum. Ask me to find a related lesson, explain how the study tools work, or help choose your next step.";
@@ -89,7 +90,7 @@ export function AiCopilot() {
           <div className="ai-copilot-log" ref={logRef} aria-live="polite">
             {messages.map((message, index) => (
               <div className={`ai-copilot-message ${message.role === "user" ? "is-user" : ""}`} key={`${message.role}-${index}`}>
-                <p>{message.text}</p>
+                {message.role === "assistant" ? <ReactMarkdown>{message.text}</ReactMarkdown> : <p>{message.text}</p>}
                 {message.error && <small className="ai-copilot-offline">Live AI unavailable</small>}
                 {message.actions?.length > 0 && (
                   <div className="ai-copilot-actions">
