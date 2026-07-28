@@ -90,6 +90,6 @@ ${catalog}`;
 
     return NextResponse.json({ recommendations, offline: false, provider: "apifreellm" });
   } catch (error) {
-    return NextResponse.json({ recommendations: fallback, offline: true, providerStatus: error?.code || "unavailable" });
+    return NextResponse.json({ recommendations: fallback, offline: true, providerStatus: error?.code || "unavailable", providerHttpStatus: Number(error?.status) || null });
   }
 }
