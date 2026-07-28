@@ -42,7 +42,7 @@ export function MotionController() {
         }
       });
       mutations.observe(document.body, { childList: true, subtree: true });
-    }, 120);
+    }, 1000);
 
     return () => {
       window.clearTimeout(start);

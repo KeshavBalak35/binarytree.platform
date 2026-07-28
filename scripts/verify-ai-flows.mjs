@@ -43,6 +43,15 @@ try {
   await noOverflow(page, "Desktop copilot");
   await page.screenshot({ path: path.join(outputDir, "binary-tree-ai-desktop.png") });
 
+  await page.goto(`${baseURL}/team`, { waitUntil: "networkidle" });
+  await page.getByRole("button", { name: /Ask Binary Tree AI/ }).click();
+  await page.locator("#binary-tree-ai-question").fill("Wait, on this team page, who is Abhijay Gangarapu? Is he smart?");
+  await page.getByRole("button", { name: "Send question" }).click();
+  await page.locator(".ai-copilot-message:not(.is-user)").nth(1).waitFor();
+  const teamAnswer = await page.locator(".ai-copilot-message:not(.is-user)").nth(1).innerText();
+  check("Team answer identifies Abhijay's complete role", teamAnswer.includes("Director of AI, Open Source and Hackathons"), teamAnswer);
+  check("Team answer addresses the subjective question honestly", /smart/i.test(teamAnswer) && /(not enough evidence|cannot judge|can't judge|does not provide enough|not possible to judge)/i.test(teamAnswer), teamAnswer);
+  check("Direct team answer does not add irrelevant cards", await page.locator(".ai-copilot-actions a").count() === 0, String(await page.locator(".ai-copilot-actions a").count()));
 
   await page.goto(`${baseURL}/assessment`, { waitUntil: "networkidle" });
   await page.getByLabel("Student full name").fill("QA Learner");

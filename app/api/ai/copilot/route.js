@@ -22,6 +22,8 @@ const SITE_PAGES = [
 ];
 
 const STOP_WORDS = new Set(["about", "binary", "course", "from", "help", "learn", "lesson", "need", "page", "should", "that", "this", "tree", "want", "what", "with"]);
+const NAVIGATION_INTENT = /\b(find|show|take me|open|go to|where|start|recommend|browse|explore|join|apply|course|lesson|tool|study|practice)\b/i;
+const SUBJECTIVE_JUDGMENT = /\b(smart|intelligent|good person|trustworthy|talented|best|better than|competent)\b/i;
 
 function cleanPathname(value) {
   const pathname = String(value || "/").split("?")[0];
@@ -51,8 +53,36 @@ function findLessons(query, lessons) {
   return matches.slice(0, 3).map(({ lesson }) => lessonAction(lesson, "A close match for what you described."));
 }
 
+function roleExplanation(person) {
+  if (person.role.includes("AI, Open Source and Hackathons")) return "Their listed responsibilities cover Binary Tree’s AI work, open-source initiatives, and hackathons.";
+  if (person.role.includes("International Relations and Education")) return "Their listed responsibilities connect international relationships with education programs.";
+  if (person.role.includes("Curriculum Design and Education")) return "Their listed responsibilities cover curriculum design and education.";
+  if (person.role === "Founder") return "As founder, they are listed as the person who established Binary Tree.";
+  if (person.role === "Executive Director") return "As executive director, they are listed in an organization-wide leadership role.";
+  return `Their published area is ${person.group.toLowerCase()}.`;
+}
+
+function mentionedTeamMember(question) {
+  const normalized = question.toLowerCase();
+  return TEAM.find((person) => {
+    const fullName = person.name.toLowerCase().replace(/[.]/g, "");
+    const meaningfulParts = fullName.split(/\s+/).filter((part) => part.length >= 4);
+    return normalized.replace(/[.]/g, "").includes(fullName) || meaningfulParts.some((part) => normalized.includes(part));
+  }) || null;
+}
+
 function localResponse(question, pathname, lessons) {
   const normalized = question.toLowerCase();
+  const person = mentionedTeamMember(question);
+  if (person) {
+    const judgment = SUBJECTIVE_JUDGMENT.test(question)
+      ? `The published team page does not provide enough evidence to fairly judge whether ${person.name} is “smart.” A leadership title can show responsibility and trust, but it is not proof of intelligence.`
+      : "";
+    return {
+      answer: `${person.name} is Binary Tree’s ${person.role}. ${roleExplanation(person)}${judgment ? ` ${judgment}` : ""}`,
+      actions: [],
+    };
+  }
   if (/(course|lesson|learn|python|coding|design|data|business|machine|spreadsheet|digital)/.test(normalized)) {
     return { answer: "I found a few lessons that match what you described. Start with the first one, then use its lesson tutor whenever an idea needs a simpler explanation.", actions: findLessons(question, lessons) };
   }
@@ -103,7 +133,7 @@ export async function POST(request) {
 
   const lessonCatalog = lessons.map((lesson) => `${`/learn/${lesson.slug}`} | ${TRACK_META[lesson.trackSlug]?.shortTitle || lesson.track} | ${lesson.title} | ${String(lesson.summary).slice(0, 180)}`).join("\n");
   const siteMap = SITE_PAGES.map((page) => `${page.href} | ${page.label} | ${page.purpose}`).join("\n");
-  const team = TEAM.map((person) => `${person.name} — ${person.role}`).join("; ");
+  const team = TEAM.map((person) => `${person.name} — ${person.role}; published area: ${person.group}`).join("; ");
   const partners = PARTNERS.map((partner) => `${partner.name} (${partner.focus})`).join("; ");
   const prompt = `You are the built-in Binary Tree AI guide. You help a learner take a useful action inside this website.
 
@@ -118,8 +148,12 @@ ${question}
 
 GROUNDING RULES
 - Use only the site map, course catalog, team, and partner facts below.
-- Be warm, direct, and practical. Answer in at most 100 words.
-- Recommend zero to three useful internal links. Never invent a link.
+- Identify every distinct question or request in the learner's message and answer each one. Never silently skip a clause.
+- Separate published facts from reasonable inference and from what cannot be known from the supplied evidence.
+- For subjective judgments such as whether a person is smart, good, trustworthy, or talented, explicitly say the site does not provide enough evidence to judge. You may explain what their published role suggests, but label that as an inference rather than proof.
+- Be warm, direct, conversational, and practical. Answer in at most 140 words.
+- Recommend zero to three useful internal links. Only include a link when the learner asks to navigate, find, open, start, or when a link materially completes the request. Direct factual answers should normally return an empty actions array.
+- Never invent a link.
 - If the request is outside Binary Tree or the supplied curriculum, say what you can help with instead.
 - Do not imply access to private accounts, assessment records, browsing history, or progress unless the learner wrote it in this conversation.
 - Return ONLY valid JSON:
@@ -140,9 +174,19 @@ ${partners}`;
   try {
     const result = await generateAIText(prompt, { json: true, temperature: 0.15 });
     const parsed = parseAIJson(result.text);
-    const answer = String(parsed?.answer || "").trim().slice(0, 1200);
+    let answer = String(parsed?.answer || "").trim();
     if (!answer) throw new Error("Missing answer");
-    const actions = safeActions([...safeActions(parsed.actions, lessons), ...fallback.actions], lessons);
+    const namedPerson = mentionedTeamMember(question);
+    if (namedPerson && !answer.toLowerCase().includes(namedPerson.role.toLowerCase())) {
+      answer = `${namedPerson.name} is Binary Tree’s ${namedPerson.role}. ${answer}`;
+    }
+    if (namedPerson && SUBJECTIVE_JUDGMENT.test(question) && !/(not enough evidence|cannot judge|can’t judge|can't judge|does not provide enough|not possible to judge)/i.test(answer)) {
+      answer += ` The published team page does not provide enough evidence to fairly judge whether ${namedPerson.name} is “smart.” Their role shows responsibility, but a title alone is not proof of intelligence.`;
+    }
+    answer = answer.slice(0, 1200);
+    const actions = NAVIGATION_INTENT.test(question)
+      ? safeActions([...safeActions(parsed.actions, lessons), ...fallback.actions], lessons)
+      : [];
     return NextResponse.json({ answer, actions, offline: false, provider: "groq" });
   } catch {
     return NextResponse.json({ ...fallback, offline: true });
