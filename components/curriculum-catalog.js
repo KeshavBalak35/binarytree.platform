@@ -22,6 +22,9 @@ export function CurriculumCatalog({ tracks, initialTrack = "all" }) {
   const validRequestedTrack = requestedTrack === "all" || tracks.some((track) => track.slug === requestedTrack) ? requestedTrack : "all";
   const [query, setQuery] = useState("");
   const [selectedTrack, setSelectedTrack] = useState(null);
+  const [aiResults, setAiResults] = useState([]);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiMessage, setAiMessage] = useState("");
   const activeTrack = selectedTrack ?? validRequestedTrack;
 
   function selectTrack(slug) {
@@ -30,6 +33,12 @@ export function CurriculumCatalog({ tracks, initialTrack = "all" }) {
     if (slug === "all") url.searchParams.delete("track");
     else url.searchParams.set("track", slug);
     window.history.replaceState({}, "", url);
+  }
+
+  function updateQuery(value) {
+    setQuery(value);
+    setAiResults([]);
+    setAiMessage("");
   }
 
   const visibleTracks = useMemo(() => {
@@ -44,6 +53,40 @@ export function CurriculumCatalog({ tracks, initialTrack = "all" }) {
   }, [tracks, query, activeTrack]);
 
   const visibleCount = visibleTracks.reduce((total, track) => total + track.lessons.length, 0);
+
+  async function findWithAI() {
+    const request = query.trim();
+    if (request.length < 3 || aiLoading) return;
+    setAiLoading(true);
+    setAiResults([]);
+    setAiMessage("The free AI guide may take about 25 seconds. Your normal search still works instantly.");
+
+    try {
+      const response = await fetch("/api/ai/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: request }),
+      });
+      const data = await response.json();
+      if (!response.ok || !Array.isArray(data.recommendations)) throw new Error("unavailable");
+      setAiResults(data.recommendations);
+      setAiMessage(data.offline
+        ? "The AI service is busy, so these are the closest matches found on this device."
+        : "Three recommendations from the Binary Tree AI course guide.");
+    } catch {
+      const local = visibleTracks.flatMap((track) => track.lessons.map((lesson) => ({
+        slug: lesson.slug,
+        title: lesson.title,
+        summary: lesson.summary,
+        track: track.shortTitle,
+        reason: "A close match from the offline curriculum search.",
+      }))).slice(0, 3);
+      setAiResults(local);
+      setAiMessage(local.length ? "The AI guide is busy, so these are the closest offline matches." : "Try describing the skill with broader words, then ask the AI guide again.");
+    } finally {
+      setAiLoading(false);
+    }
+  }
 
   return (
     <div className="catalog-shell">
@@ -61,8 +104,9 @@ export function CurriculumCatalog({ tracks, initialTrack = "all" }) {
           <div className="catalog-toolbar">
             <label className="search-field">
               <span className="sr-only">Search the curriculum</span><SearchIcon />
-              <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search lessons and skills" />
+              <input value={query} onChange={(event) => updateQuery(event.target.value)} placeholder="What do you want to learn?" />
             </label>
+            <button className="button button-secondary catalog-ai-button" type="button" disabled={aiLoading || query.trim().length < 3} onClick={findWithAI}>{aiLoading ? "AI is looking…" : "Find with AI"}</button>
             <label className="catalog-mobile-filter">
               <span>Course</span>
               <select value={activeTrack} onChange={(event) => selectTrack(event.target.value)}>
@@ -73,8 +117,23 @@ export function CurriculumCatalog({ tracks, initialTrack = "all" }) {
           </div>
           <p className="catalog-count">{visibleCount} {visibleCount === 1 ? "lesson" : "lessons"} · Notes, practice, flashcards, and quizzes work offline</p>
 
+          {(aiMessage || aiResults.length > 0) && (
+            <section className="ai-search-guide" aria-live="polite" aria-label="AI course recommendations">
+              <div className="ai-search-guide-heading"><span aria-hidden="true">✦</span><div><strong>AI course guide</strong><p>{aiMessage}</p></div></div>
+              {aiResults.length > 0 && <div className="ai-search-results">
+                {aiResults.map((result, index) => (
+                  <Link href={`/learn/${result.slug}`} key={result.slug}>
+                    <span>{index + 1}</span>
+                    <div><small>{result.track}</small><strong>{result.title}</strong><p>{result.reason}</p></div>
+                    <span aria-hidden="true">→</span>
+                  </Link>
+                ))}
+              </div>}
+            </section>
+          )}
+
           {visibleTracks.length === 0 ? (
-            <div className="empty-state" data-reveal><strong>No matching lessons.</strong><p>Try a broader topic or choose all courses.</p></div>
+            <div className="empty-state" data-reveal><strong>No matching lessons.</strong><p>Try a broader topic or ask the AI course guide.</p></div>
           ) : visibleTracks.map((track) => (
             <section className="track-section" id={track.slug} data-reveal key={track.slug}>
               <div className="track-heading">

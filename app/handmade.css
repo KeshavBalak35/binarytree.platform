@@ -198,6 +198,9 @@ h3 { letter-spacing: -.018em; }
 .catalog-sidebar nav button.is-active span { background: rgba(255,253,247,.66); }
 .catalog-practice-card { margin-top: 30px; padding: 16px 2px; border: 0; border-top: 3px solid var(--navy); background: transparent; }
 .search-field { height: 52px; border: 2px solid var(--navy); border-radius: 7px 13px 6px 10px; background: var(--warm-white); box-shadow: 3px 4px 0 rgba(36,59,63,.1); transform: rotate(.2deg); }
+.catalog-ai-button { min-height: 52px; }
+.ai-search-guide { border: 2px solid rgba(36,79,99,.42); border-radius: 12px 18px 10px 15px; background: rgba(251,253,253,.72); box-shadow: 4px 5px 0 rgba(36,59,63,.1); }
+.ai-search-results > a { border-radius: 8px 13px 7px 11px; }
 .track-section { margin-bottom: 70px; padding: 0; background: transparent; }
 .track-heading { align-items: end; padding: 0 0 23px 6px; border: 0; border-bottom: 3px solid var(--navy); }
 .track-heading::after { align-self: end; width: 24px; height: 18px; margin-bottom: -10px; background: var(--tomato); content: ""; clip-path: polygon(0 43%,70% 43%,55% 0,100% 50%,55% 100%,70% 57%,0 57%); }
@@ -473,7 +476,10 @@ h3 { letter-spacing: -.018em; }
   .assessment-invitation-inner { grid-template-columns: 1fr; align-items: start; }
   .catalog-layout { grid-template-columns: 1fr; }
   .catalog-sidebar { display: none; }
-  .catalog-toolbar { display: grid; grid-template-columns: 1fr 220px; }
+  .catalog-toolbar { display: grid; grid-template-columns: minmax(0,1fr) auto; }
+  .catalog-toolbar .search-field { grid-column: 1 / -1; }
+  .catalog-mobile-filter { grid-column: 1; }
+  .catalog-ai-button { grid-column: 2; grid-row: 2; }
   .catalog-mobile-filter { display: grid; }
   .tool-grid,.principles-grid { grid-template-columns: 1fr; }
   .tool-card,.principle { grid-column: auto; }
@@ -528,6 +534,7 @@ h3 { letter-spacing: -.018em; }
   .page-hero,.typing-page-intro { padding: 55px 0 70px; }
   .page-hero h1,.typing-page-intro h1 { font-size: 2.75rem; }
   .catalog-toolbar { grid-template-columns: 1fr; }
+  .catalog-toolbar .search-field,.catalog-mobile-filter,.catalog-ai-button { width: 100%; grid-column: 1; grid-row: auto; }
   .track-heading { display: block; }
   .track-heading::after { display: none; }
   .track-heading-meta { display: inline-block; margin-top: 15px; }

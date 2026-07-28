@@ -1,8 +1,8 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { generateAIText, isAIConfigured } from "@/lib/ai-provider";
 import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
-export const maxDuration = 15;
+export const maxDuration = 45;
 
 function fallbackPlan(topic, grade, resources) {
   return {
@@ -41,7 +41,7 @@ export async function POST(request) {
     const resources = String(body.resources || "").trim().slice(0, 500);
     if (!topic || !grade) return NextResponse.json({ error: "Topic and grade level are required." }, { status: 400 });
 
-    if (!process.env.GEMINI_API_KEY) return NextResponse.json({ plan: fallbackPlan(topic, grade, resources), offline: true });
+    if (!isAIConfigured()) return NextResponse.json({ plan: fallbackPlan(topic, grade, resources), offline: true });
 
     const prompt = `You are an expert Binary Tree curriculum designer. Create a complete, practical 60-minute lesson plan about "${topic}" for ${grade}.
 
@@ -65,11 +65,8 @@ Return ONLY valid JSON with exactly these keys:
 }
 The timeline must total exactly 60 minutes and include a warm-up, explicit teaching, demonstration, collaborative practice, an individual exercise, and wrap-up. Keep language concrete and teacher-ready.`;
 
-    const client = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = client.getGenerativeModel({ model: process.env.GEMINI_MODEL || "gemini-2.0-flash" });
-    const generation = model.generateContent(prompt).then((result) => result.response.text());
-    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 12000));
-    const text = await Promise.race([generation, timeout]);
+    const generation = await generateAIText(prompt);
+    const text = generation.text;
     const match = text.match(/\{[\s\S]*\}/);
     if (!match) throw new Error("invalid response");
     const plan = JSON.parse(match[0]);

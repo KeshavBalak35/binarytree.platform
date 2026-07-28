@@ -1,31 +1,34 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { generateAIText, isAIConfigured } from "@/lib/ai-provider";
 import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
-export const maxDuration = 15;
+export const maxDuration = 45;
 
 const LANGUAGE_NAMES = { en: "English", sw: "Kiswahili", fr: "French" };
 
-function offlineAnswer(lesson, language) {
+function fallbackAnswer(lesson, language) {
   if (language === "sw") return `${lesson.summary} Tumia kadi za kujifunza na jaribio la somo kwa mapitio zaidi.`;
   if (language === "fr") return `${lesson.summary} Utilisez les cartes mémoire et le quiz de la leçon pour aller plus loin.`;
   return `${lesson.summary} A useful practice step is: ${lesson.activity}`;
 }
 
 export async function POST(request) {
+  let lesson = {};
+  let language = "en";
+
   try {
     const body = await request.json();
     const question = String(body.question || "").trim().slice(0, 800);
     const mode = body.mode === "simplify" ? "simplify" : "answer";
-    const language = LANGUAGE_NAMES[body.language] ? body.language : "en";
-    const lesson = body.lesson || {};
+    language = LANGUAGE_NAMES[body.language] ? body.language : "en";
+    lesson = body.lesson || {};
 
     if (!question || !lesson.title || !lesson.summary) {
       return NextResponse.json({ error: "A question and lesson context are required." }, { status: 400 });
     }
 
-    if (!process.env.GEMINI_API_KEY) {
-      return NextResponse.json({ answer: offlineAnswer(lesson, language), offline: true });
+    if (!isAIConfigured()) {
+      return NextResponse.json({ answer: fallbackAnswer(lesson, language), offline: true });
     }
 
     const context = [
@@ -50,13 +53,10 @@ ${context}
 
 Learner request: ${question}`;
 
-    const client = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = client.getGenerativeModel({ model: process.env.GEMINI_MODEL || "gemini-2.0-flash" });
-    const generation = model.generateContent(prompt).then((result) => result.response.text());
-    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 12000));
-    const answer = await Promise.race([generation, timeout]);
-    return NextResponse.json({ answer: answer.trim().slice(0, 1400), offline: false });
+    const result = await generateAIText(prompt);
+    return NextResponse.json({ answer: result.text.slice(0, 1400), offline: false, provider: "apifreellm" });
   } catch {
+    if (lesson.summary) return NextResponse.json({ answer: fallbackAnswer(lesson, language), offline: true });
     return NextResponse.json({ error: "The study companion is temporarily unavailable." }, { status: 503 });
   }
 }

@@ -12,7 +12,6 @@
     "test:e2e": "node scripts/e2e-smoke.mjs"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.21.0",
     "@next/third-parties": "^16.2.11",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.45.4",
