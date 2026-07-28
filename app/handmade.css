@@ -58,8 +58,9 @@ h3 { letter-spacing: -.018em; }
 .mobile-menu-button { border: 2px solid var(--navy); border-radius: 9px 14px 7px 10px; background: var(--warm-white); box-shadow: 2px 3px 0 rgba(36,59,63,.14); }
 .mobile-menu-button span:nth-child(1) { transform: rotate(-2deg); }
 .mobile-menu-button span:nth-child(3) { transform: rotate(2deg); }
-.mobile-navigation-panel { border-left: 2px solid var(--navy); border-radius: 20px 0 0 7px; background: var(--cream); }
-.mobile-navigation-panel > a:not(.button) { border-bottom: 2px dashed var(--line); }
+.mobile-navigation-panel { border-left: 2px solid rgba(36,79,99,.28); background: var(--cream); }
+.mobile-navigation-heading,.mobile-navigation-footer { background: rgba(251,253,253,.94); }
+.mobile-navigation-group > a.is-current { box-shadow: 3px 4px 0 rgba(36,59,63,.09); }
 
 /* Home hero and tactile learning notebook */
 .hero { position: relative; min-height: 700px; overflow: hidden; padding: 82px 0 116px; border: 0; background: radial-gradient(ellipse at 10% 100%,rgba(69,126,151,.19),transparent 38%),radial-gradient(ellipse at 88% 10%,rgba(227,180,75,.15),transparent 31%),linear-gradient(145deg,#edf5f7 0%,#e4f0f4 58%,#eef5f7 100%); }
@@ -589,6 +590,7 @@ h3 { letter-spacing: -.018em; }
 @media (max-width: 390px) {
   .container,.narrow-container { width: min(calc(100% - 22px),360px); }
   .header-inner { width: calc(100% - 22px); }
+  .mobile-navigation-panel { border-left: 0; }
   .brand-lockup { gap: 7px; }
   .display-title { font-size: 2.85rem; }
   .learning-notebook { min-height: 410px; }

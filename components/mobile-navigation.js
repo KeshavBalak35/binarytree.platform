@@ -1,22 +1,51 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
-const links = [
-  { href: "/learn", label: "Courses" },
-  { href: "/typing", label: "Typing practice" },
-  { href: "/study", label: "Study tools" },
-  { href: "/assessment", label: "Skills assessment" },
-  { href: "/educators", label: "For educators" },
-  { href: "/team", label: "Our team" },
-  { href: "/partners", label: "Partners" },
-  { href: "/about", label: "Our approach" },
-  { href: "/apply", label: "Apply to join" },
+const navigationGroups = [
+  {
+    label: "Learn and practice",
+    links: [
+      { href: "/learn", label: "Courses", detail: "Browse every learning track" },
+      { href: "/typing", label: "Typing practice", detail: "Build speed with Key Quest" },
+      { href: "/study", label: "Study tools", detail: "Notes, flashcards, and quizzes" },
+      { href: "/assessment", label: "Skills assessment", detail: "Check what you already know" },
+    ],
+  },
+  {
+    label: "Binary Tree",
+    links: [
+      { href: "/educators", label: "For educators", detail: "Teaching tools and lesson planning" },
+      { href: "/team", label: "Our team", detail: "Meet the people behind the work" },
+      { href: "/partners", label: "Partners", detail: "Organizations growing our reach" },
+      { href: "/about", label: "Our approach", detail: "How and why we teach" },
+    ],
+  },
 ];
 
 export function MobileNavigation() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (!open) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", closeOnEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [open]);
 
   return (
     <div className="mobile-navigation">
@@ -32,23 +61,43 @@ export function MobileNavigation() {
         <span />
         <span />
       </button>
-      {open && (
+      {open && createPortal((
         <>
-          <button className="mobile-navigation-scrim" aria-label="Close navigation" onClick={() => setOpen(false)} />
+          <button className="mobile-navigation-scrim" type="button" aria-label="Close navigation" onClick={() => setOpen(false)} />
           <nav className="mobile-navigation-panel" id="mobile-navigation-panel" aria-label="Mobile navigation">
             <div className="mobile-navigation-heading">
-              <strong>Pick up where you left off</strong>
-              <button type="button" aria-label="Close navigation" onClick={() => setOpen(false)}>×</button>
+              <div>
+                <span>Menu</span>
+                <strong>Where would you like to go?</strong>
+              </div>
+              <button type="button" aria-label="Close navigation" onClick={() => setOpen(false)}>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                  <path d="m4.5 4.5 11 11m0-11-11 11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                </svg>
+              </button>
             </div>
-            {links.map((link) => (
-              <Link href={link.href} key={link.href} onClick={() => setOpen(false)}>
-                {link.label}<span aria-hidden="true">›</span>
-              </Link>
-            ))}
-            <Link className="button button-primary" href="/apply" onClick={() => setOpen(false)}>Apply to join Binary Tree</Link>
+            <div className="mobile-navigation-content">
+              {navigationGroups.map((group) => (
+                <div className="mobile-navigation-group" key={group.label}>
+                  <p>{group.label}</p>
+                  {group.links.map((link) => {
+                    const current = pathname === link.href || (link.href === "/learn" && pathname.startsWith("/learn/"));
+                    return (
+                      <Link className={current ? "is-current" : undefined} href={link.href} aria-current={current ? "page" : undefined} onClick={() => setOpen(false)} key={link.href}>
+                        <span><strong>{link.label}</strong><small>{link.detail}</small></span>
+                        <span className="mobile-navigation-arrow" aria-hidden="true">→</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+            <div className="mobile-navigation-footer">
+              <Link className="button button-primary" href="/apply" onClick={() => setOpen(false)}>Apply to join Binary Tree</Link>
+            </div>
           </nav>
         </>
-      )}
+      ), document.body)}
     </div>
   );
 }
