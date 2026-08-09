@@ -5,7 +5,7 @@ function formatTime(seconds) {
 
 export function LectureGuide({ video }) {
   return (
-    <section className="lecture-guide" aria-labelledby="lecture-guide-title">
+    <section className="lecture-guide" id="guide" aria-labelledby="lecture-guide-title">
       <header className="lecture-guide-header">
         <div>
           <p className="eyebrow">Complete lecture guide</p>

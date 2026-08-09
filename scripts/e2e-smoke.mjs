@@ -90,8 +90,9 @@ try {
   runtimeErrors.length = 0;
 
   await page.goto(`${baseURL}/learn?track=digital-literacy`, { waitUntil: "networkidle" });
-  check("Desktop catalog has a course sidebar", await page.locator(".catalog-sidebar").isVisible());
-  check("Digital literacy filter shows one track", await page.locator(".track-section").count() === 1, String(await page.locator(".track-section").count()));
+  check("Course map explains the three-step learning flow", await page.locator(".course-start-guide").isVisible());
+  check("Recent-upload audit is visible", (await page.locator(".course-audit-pill").innerText()).includes("37 / 37"));
+  check("Digital literacy filter shows one expanded course", await page.locator(".course-path-card.is-expanded").count() === 1, String(await page.locator(".course-path-card.is-expanded").count()));
   check("Digital literacy contains five lessons", await page.locator(".lesson-row").count() === 5, String(await page.locator(".lesson-row").count()));
   const lessonHref = await page.locator(".lesson-row").first().getAttribute("href");
   check("Catalog links to a real lesson", lessonHref?.startsWith("/learn/") === true, lessonHref || "missing href");
@@ -104,7 +105,8 @@ try {
   const englishOverview = (await page.locator(".lesson-language-copy p").innerText()).trim();
   await page.getByRole("button", { name: "Kiswahili", exact: true }).click();
   check("Language switcher replaces the visible overview", (await page.locator(".lesson-language-copy p").innerText()).trim() !== englishOverview);
-  check("Detailed lesson includes guided walkthrough and common mistakes", await page.locator(".lesson-article").getByRole("heading", { name: "Guided walkthrough" }).isVisible() && await page.locator(".lesson-article").getByRole("heading", { name: "Common mistakes and fixes" }).isVisible());
+  check("Detailed video lesson includes four or more deep-dive sections", await page.locator(".lecture-guide-section").count() >= 4, String(await page.locator(".lecture-guide-section").count()));
+  check("Lesson gives one five-step route", await page.locator(".lesson-route li").count() === 5, String(await page.locator(".lesson-route li").count()));
   await noHorizontalOverflow(page, "Desktop lesson");
 
   await page.getByRole("tab", { name: "Flashcards" }).click();
@@ -186,8 +188,13 @@ try {
 
   await page.setViewportSize({ width: 390, height: 844 });
 
+  await page.goto(`${baseURL}/learn`, { waitUntil: "networkidle" });
+  check("Phone course map keeps one obvious start action", await page.locator(".course-path-next .button").first().isVisible());
+  await noHorizontalOverflow(page, "390px course map");
+
   await page.goto(`${baseURL}${lessonHref}`, { waitUntil: "networkidle" });
   check("Mobile lesson replaces sidebar with course disclosure", await page.locator(".lesson-mobile-outline").isVisible() && !await page.locator(".lesson-sidebar").isVisible());
+  check("Phone lesson route stacks into readable steps", await page.locator(".lesson-route li").count() === 5, String(await page.locator(".lesson-route li").count()));
   await noHorizontalOverflow(page, "390px lesson");
 
   await page.setViewportSize({ width: 360, height: 800 });

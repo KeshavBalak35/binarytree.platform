@@ -14,8 +14,10 @@ const browserPath = browserCandidates.find((candidate) => fs.existsSync(candidat
 const liveAI = process.env.E2E_LIVE_AI === "1";
 const runPython = process.env.E2E_PYTHON === "1";
 const lessonSlug = "professional-05-good-websites";
+const newlyIntegratedSlug = "brand-01-networking-safely";
 const pythonSlug = "professional-06-python-introduction";
 const video = getVideoCurriculum(lessonSlug);
+const newlyIntegratedVideo = getVideoCurriculum(newlyIntegratedSlug);
 const project = getCodeProject(video.projectId);
 const checks = [];
 const runtimeErrors = [];
@@ -88,6 +90,11 @@ try {
   const videoProgress = await page.evaluate((slug) => JSON.parse(localStorage.getItem("binarytree-progress-v3") || "{}").lessons?.[slug]?.video, lessonSlug);
   check("Checkpoint persists in unified progress", videoProgress?.checkpointIds?.includes(checkpoint.id), JSON.stringify(videoProgress));
   await noHorizontalOverflow(page, "Desktop interactive lesson");
+
+  await page.goto(`${baseURL}/learn/${newlyIntegratedSlug}`, { waitUntil: "networkidle" });
+  check("Newly integrated Brand lesson uses the official upload", (await page.locator(".lesson-source-banner").innerText()).includes(newlyIntegratedVideo.title));
+  check("Newly integrated upload has its complete chapter map", await page.locator(".video-chapter-panel li").count() === newlyIntegratedVideo.chapters.length, String(await page.locator(".video-chapter-panel li").count()));
+  check("Newly integrated upload has deep notes and a five-step route", await page.locator(".lecture-guide-section").count() === newlyIntegratedVideo.guide.length && await page.locator(".lesson-route li").count() === 5);
 
   await page.goto(`${baseURL}/lab/${lessonSlug}`, { waitUntil: "networkidle" });
   check("Mapped Code Lab opens", await page.getByRole("heading", { level: 1, name: project.title }).isVisible());
