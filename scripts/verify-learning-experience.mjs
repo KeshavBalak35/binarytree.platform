@@ -33,11 +33,13 @@ const expected = {
   "ml-05-neural-networks": "lJljFiS0K54",
   "ml-06-tuning-neural-networks": "FcJGbJACLgg",
   "professional-01-resumes-and-email": "lzYrX2LuPt0",
-  "professional-02-social-media-safety": "U8sJOg0l8ZU",
-  "professional-03-google-workspace": "8UJJE5f725A",
+  "professional-02-social-media-safety": "ufQPCMWN7l8",
+  "professional-03-google-workspace": "9QcdNko3ij0",
   "professional-04-workflow-automation": "rfx58lr4j6c",
   "professional-05-good-websites": "eRhl4WbfOvU",
   "professional-06-python-introduction": "ziOMNBODis0",
+  "professional-07-python-data-structures": "A0ILZCWGupc",
+  "professional-08-ai-everyday-life": "7AKEcYAcVk0",
   "senegal-01-computer-skills": "od89YjT7TWU",
   "senegal-02-understanding-users": "q7zbSsHaNJc",
   "senegal-03-social-media-presence": "NAX9KoIdlR8",
@@ -49,7 +51,7 @@ const expected = {
   "senegal-09-task-automation": "nlcbhV8r9hQ",
 };
 
-if (Object.keys(videos).length !== 37) errors.push(`expected every one of the 37 uploads from the 15-day audit, found ${Object.keys(videos).length}`);
+if (Object.keys(videos).length !== 39) errors.push(`expected all 39 current curriculum uploads from the 15-day audit, found ${Object.keys(videos).length}`);
 const videoIds = new Set();
 
 for (const [slug, youtubeId] of Object.entries(expected)) {
@@ -61,7 +63,7 @@ for (const [slug, youtubeId] of Object.entries(expected)) {
   if (video.youtubeId !== youtubeId) errors.push(`${slug}: expected YouTube id ${youtubeId}, found ${video.youtubeId}`);
   if (videoIds.has(video.youtubeId)) errors.push(`${slug}: duplicate YouTube id ${video.youtubeId}`);
   videoIds.add(video.youtubeId);
-  if (!/^2026-08-0[2-8]$/.test(video.publishedAt)) errors.push(`${slug}: publish date ${video.publishedAt} falls outside the audited upload set`);
+  if (!/^2026-08-0[2-9]$/.test(video.publishedAt)) errors.push(`${slug}: publish date ${video.publishedAt} falls outside the audited upload set`);
   if (!Number.isInteger(video.durationSeconds) || video.durationSeconds < 60) errors.push(`${slug}: invalid duration`);
   if (!Array.isArray(video.chapters) || video.chapters.length < 7) errors.push(`${slug}: needs at least 7 timestamped chapters`);
   if (video.chapters?.some((chapter, index) => chapter.time < 0 || chapter.time >= video.durationSeconds || (index && chapter.time < video.chapters[index - 1].time))) errors.push(`${slug}: chapters must be sorted and inside the video`);
@@ -80,8 +82,8 @@ for (const [slug, youtubeId] of Object.entries(expected)) {
   try { await access(path.join(root, "content", "lessons", `${slug}.md`)); } catch { errors.push(`${slug}: matching lesson file missing`); }
 }
 
-for (const slug of ["professional-02-social-media-safety", "professional-03-google-workspace"]) {
-  if (!videos[slug]?.sourceNote?.includes("captions are disabled")) errors.push(`${slug}: visual-only evidence must be disclosed`);
+for (const slug of ["professional-02-social-media-safety", "professional-03-google-workspace", "professional-07-python-data-structures", "professional-08-ai-everyday-life"]) {
+  if (!videos[slug]?.sourceNote?.includes("Reviewed against") && !videos[slug]?.guideIntroduction?.includes("lecture")) errors.push(`${slug}: current lecture evidence note missing`);
 }
 if (!videos["senegal-07-copyright"]?.references?.some((reference) => reference.url.includes("senegalservices"))) errors.push("senegal-07-copyright: current official legal reference missing");
 if (!projects.get("python-opportunity") || projects.get("python-opportunity")?.language !== "python") errors.push("runnable Python project missing");
@@ -91,4 +93,4 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log(`Verified ${Object.keys(videos).length} recent videos, ${videoIds.size} unique YouTube ids, ${projects.size} code projects, detailed guides, interactive checkpoints, and lesson mappings.`);
+console.log(`Verified ${Object.keys(videos).length} current videos, ${videoIds.size} unique YouTube ids, ${projects.size} code projects, detailed guides, interactive checkpoints, and lesson mappings.`);

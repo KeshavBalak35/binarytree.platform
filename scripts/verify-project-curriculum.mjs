@@ -55,7 +55,7 @@ for (const lesson of lessons) {
 
 check(codeProjects === 18, `Expected 18 coding projects, found ${codeProjects}.`);
 check(workbookProjects === 24, `Expected 24 project workbooks, found ${workbookProjects}.`);
-check(videoLessons === 37, `Expected 37 integrated video lessons, found ${videoLessons}.`);
+check(videoLessons === 39, `Expected 39 integrated video lessons, found ${videoLessons}.`);
 
 if (failures.length) {
   console.error(`Project curriculum verification failed with ${failures.length} issue(s):`);

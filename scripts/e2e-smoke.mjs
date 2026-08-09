@@ -91,7 +91,7 @@ try {
 
   await page.goto(`${baseURL}/learn?track=digital-literacy`, { waitUntil: "networkidle" });
   check("Course map explains the three-step learning flow", await page.locator(".course-start-guide").isVisible());
-  check("Recent-upload audit is visible", (await page.locator(".course-audit-pill").innerText()).includes("37 / 37"));
+  check("Current-upload audit is visible", (await page.locator(".course-audit-pill").innerText()).includes("39 / 39"));
   check("Digital literacy filter shows one expanded course", await page.locator(".course-path-card.is-expanded").count() === 1, String(await page.locator(".course-path-card.is-expanded").count()));
   check("Digital literacy contains five lessons", await page.locator(".lesson-row").count() === 5, String(await page.locator(".lesson-row").count()));
   const lessonHref = await page.locator(".lesson-row").first().getAttribute("href");
