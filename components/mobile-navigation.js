@@ -7,12 +7,18 @@ import { createPortal } from "react-dom";
 
 const navigationGroups = [
   {
+    label: "Start here",
+    links: [
+      { href: "/assessment", label: "1. Take the assessment", detail: "Find the right place to begin" },
+      { href: "/tree-path", label: "2. Follow TreePath", detail: "See your one unlocked next step" },
+    ],
+  },
+  {
     label: "Learn and practice",
     links: [
-      { href: "/assessment", label: "Start with the assessment", detail: "Do this before your first lesson" },
-      { href: "/learn", label: "Courses", detail: "Browse every learning track" },
-      { href: "/lab", label: "Project Library", detail: "One practical project for every lesson" },
-      { href: "/progress", label: "Progress tree", detail: "See every checkpoint grow your tree" },
+      { href: "/learn", label: "Course library", detail: "Find one specific course" },
+      { href: "/lab", label: "Project library", detail: "Build something from every lesson" },
+      { href: "/progress", label: "Progress", detail: "Review activity and achievements" },
       { href: "/typing", label: "Typing practice", detail: "Build speed with Key Quest" },
       { href: "/study", label: "Study tools", detail: "Notes, flashcards, and quizzes" },
     ],
@@ -82,7 +88,7 @@ export function MobileNavigation() {
                 <div className="mobile-navigation-group" key={group.label}>
                   <p>{group.label}</p>
                   {group.links.map((link) => {
-                    const current = pathname === link.href || (["/learn", "/lab"].includes(link.href) && pathname.startsWith(`${link.href}/`));
+                    const current = pathname === link.href || (["/learn", "/lab", "/tree-path"].includes(link.href) && pathname.startsWith(`${link.href}/`));
                     return (
                       <Link className={current ? "is-current" : undefined} href={link.href} aria-current={current ? "page" : undefined} onClick={() => setOpen(false)} key={link.href}>
                         <span><strong>{link.label}</strong><small>{link.detail}</small></span>

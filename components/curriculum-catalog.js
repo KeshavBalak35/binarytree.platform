@@ -5,182 +5,66 @@ import { useMemo, useState, useSyncExternalStore } from "react";
 import { formatDuration } from "@/lib/format";
 import { lessonProgressPercent, trackProgressPercent, useProgressSnapshot } from "@/lib/progress-store";
 
-const FEATURED_TRACKS = ["professional-foundations", "senegal-entrepreneurship"];
-const RECENT_VIDEO_TRACKS = ["digital-literacy", "personal-brand", "intermediate-python", "machine-learning"];
+function subscribeToUrl(onChange) { window.addEventListener("popstate", onChange); return () => window.removeEventListener("popstate", onChange); }
+function getTrackFromUrl() { return new URLSearchParams(window.location.search).get("track") || "all"; }
+function SearchIcon() { return <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.2-3.2" /></svg>; }
 
-function subscribeToUrl(onStoreChange) {
-  window.addEventListener("popstate", onStoreChange);
-  return () => window.removeEventListener("popstate", onStoreChange);
-}
-
-function getTrackFromUrl() {
-  return new URLSearchParams(window.location.search).get("track") || "all";
-}
-
-function SearchIcon() {
-  return <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.2-3.2" /></svg>;
-}
-
-function CoursePathCard({ track, progressState, featured = false, expanded = false, onOpen }) {
-  const percent = trackProgressPercent(track, progressState);
-  const nextLesson = track.lessons.find((lesson) => lessonProgressPercent(lesson, progressState) < 100) || track.lessons[track.lessons.length - 1];
-  const videoLessons = track.lessons.filter((lesson) => lesson.video).length;
-  const videoMinutes = Math.round(track.lessons.reduce((total, lesson) => total + (lesson.video?.durationSeconds || 0), 0) / 60);
-  const projects = track.lessons.filter((lesson) => lesson.project).length;
-  const visibleLessons = expanded ? track.lessons : track.lessons.slice(0, featured ? 4 : 3);
-
+function CompactCourseCard({ track, progress }) {
+  const percent = trackProgressPercent(track, progress);
+  const nextLesson = track.lessons.find((lesson) => lessonProgressPercent(lesson, progress) < 100) || track.lessons[track.lessons.length - 1];
   return (
-    <article className={`course-path-card course-path-${track.color} ${featured ? "is-featured" : ""} ${expanded ? "is-expanded" : ""}`} id={track.slug}>
-      <header className="course-path-header">
-        <div className="course-path-title">
-          <span className="course-card-eyebrow">{track.eyebrow}</span>
-          <h2>{track.title}</h2>
-          <p>{track.description}</p>
-        </div>
-        <div className="course-path-progress" aria-label={`${percent}% of ${track.title} complete`}>
-          <strong>{percent}%</strong><span>complete</span><i><b style={{ width: `${percent}%` }} /></i>
-        </div>
-      </header>
-
-      <div className="course-path-facts" aria-label="Course details">
-        <span><strong>{track.count}</strong> ordered lessons</span>
-        <span><strong>{videoLessons}</strong> embedded lectures</span>
-        <span><strong>{formatDuration(track.totalMinutes)}</strong> guided study</span>
-        <span><strong>{videoMinutes} min</strong> of video</span>
-        {projects > 0 && <span><strong>{projects}</strong> code {projects === 1 ? "project" : "projects"}</span>}
-      </div>
-
-      <div className="course-path-next">
-        <div><small>{percent > 0 ? "Your next lesson" : "Start with lesson 1"}</small><strong>{nextLesson.title}</strong><span>{nextLesson.video ? `${nextLesson.video.durationLabel} video · interactive checks` : formatDuration(nextLesson.duration)}</span></div>
-        <Link className="button button-primary" href={`/learn/${nextLesson.slug}`}>{percent > 0 ? "Continue course" : "Start course"} →</Link>
-      </div>
-
-      <ol className="course-lesson-plan" aria-label={`${track.title} lesson plan`}>
-        {visibleLessons.map((lesson) => {
-          const lessonPercent = lessonProgressPercent(lesson, progressState);
-          return (
-            <li className={lesson.slug === nextLesson.slug ? "is-next" : ""} key={lesson.slug}>
-              <Link className="lesson-row" href={`/learn/${lesson.slug}`}>
-                <span className="lesson-number">{lesson.week}</span>
-                <span className="lesson-row-content"><span className="lesson-row-label">Lesson {lesson.week} · {lesson.video ? "Video + practice" : "Guided lesson"}</span><h3>{lesson.title}</h3><p>{lesson.summary}</p></span>
-                <span className="lesson-row-meta"><span>{lesson.video ? lesson.video.durationLabel : formatDuration(lesson.duration)}</span><em>{lessonPercent > 0 ? `${lessonPercent}%` : "Start"}</em><span className="lesson-row-arrow" aria-hidden="true">›</span></span>
-              </Link>
-            </li>
-          );
-        })}
-      </ol>
-
-      {!expanded && track.lessons.length > visibleLessons.length && <button className="course-plan-open" type="button" onClick={() => onOpen(track.slug)}>See all {track.count} lessons in order →</button>}
+    <article className="compact-course-card" id={track.slug}>
+      <div className="compact-course-top"><div><span>{track.eyebrow}</span><h2>{track.title}</h2></div><strong>{percent}%</strong></div>
+      <p>{track.description}</p>
+      <div className="compact-course-meter"><span style={{ width: `${percent}%` }} /></div>
+      <div className="compact-course-next"><span><small>{percent ? "Continue with" : "Begin with"}</small><strong>{nextLesson.title}</strong></span><Link className="button button-primary button-small" href={`/learn/${nextLesson.slug}`}>{percent ? "Continue" : "Start"} →</Link></div>
+      <details><summary>See all {track.count} lessons <span>{formatDuration(track.totalMinutes)}</span></summary><ol>{track.lessons.map((lesson) => <li key={lesson.slug}><Link href={`/learn/${lesson.slug}`}><span>{lesson.week}. {lesson.title}</span><em>{lessonProgressPercent(lesson, progress)}%</em></Link></li>)}</ol></details>
     </article>
   );
 }
 
-function CourseGroup({ eyebrow, title, description, tracks, progressState, featured = false, onOpen }) {
-  if (!tracks.length) return null;
-  return (
-    <section className="course-group" aria-labelledby={`group-${eyebrow.replaceAll(" ", "-")}`}>
-      <div className="course-group-heading"><div><p className="eyebrow">{eyebrow}</p><h2 id={`group-${eyebrow.replaceAll(" ", "-")}`}>{title}</h2></div><p>{description}</p></div>
-      <div className={`course-path-grid ${featured ? "is-featured" : ""}`}>
-        {tracks.map((track) => <CoursePathCard track={track} progressState={progressState} featured={featured} onOpen={onOpen} key={track.slug} />)}
-      </div>
-    </section>
-  );
-}
-
 export function CurriculumCatalog({ tracks, initialTrack = "all" }) {
-  const requestedTrack = useSyncExternalStore(subscribeToUrl, getTrackFromUrl, () => initialTrack);
-  const validRequestedTrack = requestedTrack === "all" || tracks.some((track) => track.slug === requestedTrack) ? requestedTrack : "all";
+  const requested = useSyncExternalStore(subscribeToUrl, getTrackFromUrl, () => initialTrack);
   const [query, setQuery] = useState("");
-  const [selectedTrack, setSelectedTrack] = useState(null);
+  const [selected, setSelected] = useState(null);
   const [aiResults, setAiResults] = useState([]);
-  const [aiLoading, setAiLoading] = useState(false);
   const [aiMessage, setAiMessage] = useState("");
-  const progressState = useProgressSnapshot();
-  const activeTrack = selectedTrack ?? validRequestedTrack;
+  const [aiLoading, setAiLoading] = useState(false);
+  const progress = useProgressSnapshot();
+  const active = selected ?? (requested === "all" || tracks.some((track) => track.slug === requested) ? requested : "all");
+  const visible = useMemo(() => {
+    const term = query.trim().toLowerCase();
+    return tracks.filter((track) => (active === "all" || track.slug === active) && (!term || [track.title, track.description, ...track.lessons.flatMap((lesson) => [lesson.title, lesson.summary])].join(" ").toLowerCase().includes(term)));
+  }, [active, query, tracks]);
 
-  function selectTrack(slug, scroll = false) {
-    setSelectedTrack(slug);
-    setQuery("");
+  function chooseTrack(value) {
+    setSelected(value);
     const url = new URL(window.location.href);
-    if (slug === "all") url.searchParams.delete("track");
-    else url.searchParams.set("track", slug);
+    if (value === "all") url.searchParams.delete("track"); else url.searchParams.set("track", value);
     window.history.replaceState({}, "", url);
-    if (scroll) window.setTimeout(() => document.getElementById("course-results")?.scrollIntoView({ behavior: "smooth", block: "start" }), 0);
   }
 
-  function updateQuery(value) {
-    setQuery(value);
-    setAiResults([]);
-    setAiMessage("");
-  }
-
-  const visibleTracks = useMemo(() => {
-    const normalized = query.trim().toLowerCase();
-    return tracks
-      .filter((track) => activeTrack === "all" || track.slug === activeTrack)
-      .map((track) => ({
-        ...track,
-        lessons: track.lessons.filter((lesson) => !normalized || [lesson.title, lesson.summary, track.title].join(" ").toLowerCase().includes(normalized)),
-      }))
-      .filter((track) => track.lessons.length > 0);
-  }, [tracks, query, activeTrack]);
-
-  const featuredTracks = FEATURED_TRACKS.map((slug) => tracks.find((track) => track.slug === slug)).filter(Boolean);
-  const recentTracks = RECENT_VIDEO_TRACKS.map((slug) => tracks.find((track) => track.slug === slug)).filter(Boolean);
-  const additionalTracks = tracks.filter((track) => !FEATURED_TRACKS.includes(track.slug) && !RECENT_VIDEO_TRACKS.includes(track.slug));
-  const totalVideos = tracks.reduce((sum, track) => sum + track.lessons.filter((lesson) => lesson.video).length, 0);
-  const visibleCount = visibleTracks.reduce((total, track) => total + track.lessons.length, 0);
-
-  async function findWithAI() {
-    const request = query.trim();
-    if (request.length < 3 || aiLoading) return;
-    setAiLoading(true);
-    setAiResults([]);
-    setAiMessage("The AI guide is matching your goal to the clearest starting lesson.");
+  async function askAI() {
+    if (query.trim().length < 3 || aiLoading) return;
+    setAiLoading(true); setAiResults([]); setAiMessage("Matching your goal to the curriculum…");
     try {
-      const response = await fetch("/api/ai/search", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: request }) });
+      const response = await fetch("/api/ai/search", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query: query.trim() }) });
       const data = await response.json();
       if (!response.ok || !Array.isArray(data.recommendations)) throw new Error("unavailable");
-      setAiResults(data.recommendations);
-      setAiMessage(data.offline ? "AI is busy, so these are the closest offline matches." : "Three grounded recommendations from the Binary Tree course guide.");
+      setAiResults(data.recommendations); setAiMessage(data.offline ? "These are the closest offline matches." : "Here are three grounded matches.");
     } catch {
-      const local = visibleTracks.flatMap((track) => track.lessons.map((lesson) => ({ slug: lesson.slug, title: lesson.title, summary: lesson.summary, track: track.shortTitle, reason: "A close match from the offline curriculum." }))).slice(0, 3);
-      setAiResults(local);
-      setAiMessage(local.length ? "AI is busy, so these are the closest offline matches." : "Try a broader skill or goal.");
+      const matches = tracks.flatMap((track) => track.lessons.map((lesson) => ({ slug: lesson.slug, title: lesson.title, track: track.shortTitle, reason: lesson.summary }))).filter((item) => [item.title,item.reason].join(" ").toLowerCase().includes(query.trim().toLowerCase())).slice(0,3);
+      setAiResults(matches); setAiMessage(matches.length ? "These are the closest offline matches." : "Try a broader topic.");
     } finally { setAiLoading(false); }
   }
 
   return (
-    <div className="catalog-shell">
-      <div className="container catalog-layout">
-        <section className="course-start-guide" aria-labelledby="course-start-title">
-          <div><p className="eyebrow">How learning works</p><h2 id="course-start-title">One course. One lesson at a time.</h2><p>No guessing where to click next. Pick a course, follow its numbered lessons, and complete the same five-step routine each time.</p></div>
-          <ol><li><span>1</span><strong>Choose a course</strong><small>Start with the path that matches your goal.</small></li><li><span>2</span><strong>Follow the order</strong><small>Every lesson tells you exactly what comes next.</small></li><li><span>3</span><strong>Build evidence</strong><small>Watch, learn, practice, check, then continue.</small></li></ol>
-          <div className="course-audit-pill"><strong>{totalVideos} / {totalVideos}</strong><span>public uploads in the Aug 2–8 past-15-day audit, embedded in lessons</span></div>
-        </section>
-
-        <section className="catalog-discovery" aria-labelledby="find-course-title">
-          <div className="catalog-discovery-heading"><div><p className="eyebrow">Find a specific skill</p><h2 id="find-course-title">Know what you want to learn?</h2></div>{activeTrack !== "all" && <button type="button" onClick={() => selectTrack("all")}>← Back to all courses</button>}</div>
-          <div className="catalog-toolbar">
-            <label className="search-field"><span className="sr-only">Search the curriculum</span><SearchIcon /><input value={query} onChange={(event) => updateQuery(event.target.value)} placeholder="Try Python, web research, or personal brand" /></label>
-            <button className="button button-secondary catalog-ai-button" type="button" disabled={aiLoading || query.trim().length < 3} onClick={findWithAI}>{aiLoading ? "AI is looking…" : "Ask AI to match me"}</button>
-            <label className="catalog-mobile-filter"><span>Show one course</span><select value={activeTrack} onChange={(event) => selectTrack(event.target.value)}><option value="all">All courses</option>{tracks.map((track) => <option value={track.slug} key={track.slug}>{track.shortTitle}</option>)}</select></label>
-          </div>
-          <p className="catalog-count">{visibleCount} {visibleCount === 1 ? "lesson" : "lessons"} shown · notes and core practice work offline</p>
-
-          {(aiMessage || aiResults.length > 0) && <section className="ai-search-guide" aria-live="polite" aria-label="AI course recommendations"><div className="ai-search-guide-heading"><span aria-hidden="true">✦</span><div><strong>AI course guide</strong><p>{aiMessage}</p></div></div>{aiResults.length > 0 && <div className="ai-search-results">{aiResults.map((result, index) => <Link href={`/learn/${result.slug}`} key={result.slug}><span>{index + 1}</span><div><small>{result.track}</small><strong>{result.title}</strong><p>{result.reason}</p></div><span aria-hidden="true">→</span></Link>)}</div>}</section>}
-        </section>
-
-        <div id="course-results" className="course-results">
-          {(activeTrack !== "all" || query.trim()) ? (
-            visibleTracks.length ? visibleTracks.map((track) => <CoursePathCard track={track} progressState={progressState} expanded onOpen={selectTrack} key={track.slug} />) : <div className="empty-state"><strong>No matching lessons.</strong><p>Try a broader topic or ask the AI course guide.</p></div>
-          ) : <>
-            <CourseGroup eyebrow="Recommended start" title="Complete, guided pathways" description="These multi-week programs combine an ordered syllabus with current Binary Tree lectures, practice, study tools, and progress tracking." tracks={featuredTracks} progressState={progressState} featured onOpen={(slug) => selectTrack(slug, true)} />
-            <CourseGroup eyebrow="Video courses" title="Four more complete lecture series" description="Every upload from these four recent series is now embedded in its exact lesson—with chapters, checkpoints, deep notes, and a next step." tracks={recentTracks} progressState={progressState} onOpen={(slug) => selectTrack(slug, true)} />
-            <CourseGroup eyebrow="More learning" title="Additional focused tracks" description="Use these when they match a specific classroom or project need." tracks={additionalTracks} progressState={progressState} onOpen={(slug) => selectTrack(slug, true)} />
-          </>}
-        </div>
-      </div>
-    </div>
+    <div className="catalog-shell compact-catalog-shell"><div className="container">
+      <section className="treepath-library-callout"><div><p className="eyebrow">Need an ordered plan?</p><h2>Use TreePath—not the course library.</h2><p>TreePath checks prerequisites and shows one unlocked next step. This page is for finding a specific subject.</p></div><Link className="button button-primary" href="/tree-path">Open TreePath →</Link></section>
+      <section className="compact-discovery" aria-labelledby="course-search-title"><div><p className="eyebrow">Course library</p><h2 id="course-search-title">Find a specific course or lesson.</h2></div><div className="compact-toolbar"><label className="search-field"><span className="sr-only">Search courses</span><SearchIcon /><input value={query} onChange={(event) => { setQuery(event.target.value); setAiResults([]); setAiMessage(""); }} placeholder="Try Python, spreadsheets, or design" /></label><button className="button button-secondary" type="button" disabled={aiLoading || query.trim().length < 3} onClick={askAI}>{aiLoading ? "Matching…" : "Ask AI"}</button><label><span>Course</span><select value={active} onChange={(event) => chooseTrack(event.target.value)}><option value="all">All courses</option>{tracks.map((track) => <option value={track.slug} key={track.slug}>{track.shortTitle}</option>)}</select></label></div></section>
+      {(aiMessage || aiResults.length > 0) && <section className="ai-search-guide" aria-live="polite"><div className="ai-search-guide-heading"><span aria-hidden="true">✦</span><div><strong>AI course guide</strong><p>{aiMessage}</p></div></div>{aiResults.length > 0 && <div className="ai-search-results">{aiResults.map((item,index) => <Link href={`/learn/${item.slug}`} key={item.slug}><span>{index+1}</span><div><small>{item.track}</small><strong>{item.title}</strong><p>{item.reason}</p></div><span aria-hidden="true">→</span></Link>)}</div>}</section>}
+      <p className="compact-result-count">{visible.length} {visible.length === 1 ? "course" : "courses"} shown</p>
+      {visible.length ? <div className="compact-course-grid">{visible.map((track) => <CompactCourseCard track={track} progress={progress} key={track.slug} />)}</div> : <div className="empty-state"><strong>No matching courses.</strong><p>Try a broader topic or ask the AI guide.</p></div>}
+    </div></div>
   );
 }

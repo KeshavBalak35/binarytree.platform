@@ -132,6 +132,15 @@ export function AssessmentForm() {
     const reflection = String(answers.reflection || "");
 
     setAssessmentResult({ score, total: questions.length, dimensionScores });
+    const placement = {
+      score,
+      total: questions.length,
+      percent: Math.round((score / questions.length) * 100),
+      assessmentType: payload.assessmentType,
+      submittedAt: payload.submittedAt,
+    };
+    localStorage.setItem("binarytree-placement-v1", JSON.stringify(placement));
+    window.dispatchEvent(new Event("binarytree-placement-change"));
     setLearningPlan(null);
     setSubmitting(true);
     setStatus("");
@@ -213,7 +222,7 @@ export function AssessmentForm() {
                   <div className="assessment-recommendations">
                     {learningPlan.recommendations.map((lesson) => <Link href={`/learn/${lesson.slug}`} key={lesson.slug}><span><small>{lesson.track}</small><strong>{lesson.title}</strong><p>{lesson.reason}</p></span><span aria-hidden="true">→</span></Link>)}
                   </div>
-                ) : <div className="assessment-plan-actions"><Link className="button button-primary button-small" href="/learn">Explore beginner lessons</Link><Link className="button button-secondary button-small" href="/study">Open study tools</Link></div>}
+                ) : <div className="assessment-plan-actions"><Link className="button button-primary button-small" href="/tree-path">See my TreePath</Link><Link className="button button-secondary button-small" href="/study">Open study tools</Link></div>}
                 <small className="assessment-ai-privacy">Your name and cohort are never sent to the AI. Only your score, missed topics, and learning goal are used for this plan.</small>
               </>
             )}
