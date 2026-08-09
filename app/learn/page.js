@@ -13,7 +13,7 @@ export const dynamic = "force-static";
 export default function LearnPage() {
   const tracks = getTracks();
   const lessons = getAllLessons();
-  const progressTracks = tracks.map((track) => ({ ...track, lessons: track.lessons.map((lesson) => ({ slug: lesson.slug, videoCheckpointCount: lesson.video?.checkpoints?.length || 0, quizTotal: lesson.quiz?.length || 0, projectCheckCount: lesson.project?.tests?.length || 0 })) }));
+  const progressTracks = tracks.map((track) => ({ ...track, lessons: track.lessons.map((lesson) => ({ slug: lesson.slug, videoCheckpointCount: lesson.video?.checkpoints?.length || 0, quizTotal: lesson.quiz?.length || 0, projectCheckCount: lesson.projectCheckCount || 0 })) }));
   const videoCount = lessons.filter((lesson) => lesson.video).length;
   return (
     <main id="main-content">

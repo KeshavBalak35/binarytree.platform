@@ -42,6 +42,7 @@ export function InteractiveVideo({ lessonSlug, video }) {
   const playerRef = useRef(null);
   const handledRef = useRef(new Set());
   const activeRef = useRef(null);
+  const previousTimeRef = useRef(0);
   const reactId = useId();
   const [mode, setMode] = useState("interactive");
   const [ready, setReady] = useState(false);
@@ -112,17 +113,22 @@ export function InteractiveVideo({ lessonSlug, video }) {
       const player = playerRef.current;
       if (!player?.getCurrentTime) return;
       const time = Number(player.getCurrentTime()) || 0;
+      const previousTime = previousTimeRef.current;
+      previousTimeRef.current = time;
       setCurrentTime(time);
       if (mode !== "interactive" || activeRef.current) return;
+
+      // Seeking can jump well past a checkpoint. Open the earliest unanswered
+      // thinking point that is now due instead of relying on a tiny time window.
       const next = checkpoints.find((checkpoint) => (
-        time >= checkpoint.time
-        && time < checkpoint.time + 2.5
+        checkpoint.time <= time + 0.75
         && !handledRef.current.has(checkpoint.id)
         && !completedIds.has(checkpoint.id)
       ));
       if (!next) return;
       handledRef.current.add(next.id);
       activeRef.current = next;
+      if (time < previousTime - 1) previousTimeRef.current = time;
       player.pauseVideo?.();
       setSelectedChoice(null);
       setShowExplanation(false);
@@ -161,6 +167,7 @@ export function InteractiveVideo({ lessonSlug, video }) {
 
   const completedCount = checkpoints.filter((checkpoint) => completedIds.has(checkpoint.id)).length;
   const progressPercent = checkpoints.length ? Math.round((completedCount / checkpoints.length) * 100) : 0;
+  const playbackPercent = video.durationSeconds ? Math.min(100, (currentTime / video.durationSeconds) * 100) : 0;
   const titleId = `${reactId.replace(/:/g, "")}-title`;
 
   return (
@@ -204,6 +211,33 @@ export function InteractiveVideo({ lessonSlug, video }) {
                 </div>
               </div>
             )}
+          </div>
+          <div className="video-checkpoint-timeline" aria-label="Lecture progress and checkpoint markers">
+            <div className="video-timeline-labels">
+              <strong>{formatTime(currentTime)}</strong>
+              <span>{checkpoints.length} thinking points marked</span>
+              <strong>{formatTime(video.durationSeconds)}</strong>
+            </div>
+            <div className="video-timeline-track">
+              <span className="video-timeline-played" style={{ width: `${playbackPercent}%` }} />
+              {checkpoints.map((checkpoint, index) => {
+                const complete = completedIds.has(checkpoint.id);
+                const position = video.durationSeconds ? Math.min(100, (checkpoint.time / video.durationSeconds) * 100) : 0;
+                return (
+                  <button
+                    type="button"
+                    className={`video-timeline-marker ${complete ? "is-complete" : ""}`}
+                    style={{ left: `${position}%` }}
+                    onClick={() => seekTo(Math.max(0, checkpoint.time - 1))}
+                    disabled={!ready}
+                    aria-label={`${complete ? "Completed" : "Upcoming"} checkpoint ${index + 1} at ${formatTime(checkpoint.time)}: ${checkpoint.prompt}`}
+                    title={`Checkpoint ${index + 1} · ${formatTime(checkpoint.time)}`}
+                    key={checkpoint.id}
+                  ><span>{complete ? "✓" : index + 1}</span></button>
+                );
+              })}
+            </div>
+            <p>Numbered markers show where the video will pause. Seeking past one opens the first unanswered check.</p>
           </div>
           <div className="video-status-row">
             <span className={`video-live-dot ${online && ready ? "is-live" : ""}`} aria-hidden="true" />

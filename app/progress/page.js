@@ -21,11 +21,7 @@ function progressCatalog() {
       week: lesson.week,
       videoCheckpointCount: Array.isArray(lesson.video?.checkpoints) ? lesson.video.checkpoints.length : 0,
       quizTotal: Array.isArray(lesson.quiz) ? lesson.quiz.length : 0,
-      projectCheckCount: Array.isArray(lesson.project?.tests)
-        ? lesson.project.tests.length
-        : Array.isArray(lesson.project?.checks)
-          ? lesson.project.checks.length
-          : 0,
+      projectCheckCount: lesson.projectCheckCount || 0,
       mastery: lesson.mastery && typeof lesson.mastery === "object" ? {
         videoWeight: Number(lesson.mastery.videoWeight) || undefined,
         quizWeight: Number(lesson.mastery.quizWeight) || undefined,

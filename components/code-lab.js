@@ -367,6 +367,7 @@ export function CodeLab({
           description: project.description,
           files,
           results: results.map(({ id, title, passed, failure }) => ({ id, title, passed, failure })),
+          hintLevel: visibleHintCount + 1,
         }),
       });
       const data = await response.json().catch(() => ({}));
@@ -530,7 +531,7 @@ export function CodeLab({
 
         <aside className="code-lab-help" aria-labelledby="code-lab-help-title">
           <span className="code-lab-kicker">When you get stuck</span>
-          <h3 id="code-lab-help-title">Hints that do not give everything away</h3>
+          <h3 id="code-lab-help-title">One hint at a time—never the solution</h3>
           {visibleHintCount > 0 && (
             <ol className="code-lab-hints">
               {project.hints.slice(0, visibleHintCount).map((hint) => <li key={hint}>{hint}</li>)}
@@ -541,10 +542,10 @@ export function CodeLab({
               {visibleHintCount ? "Show another hint" : "Show a hint"}
             </button>
             <button className="code-lab-button code-lab-ai" type="button" onClick={askAICoach} disabled={aiStatus === "loading"}>
-              {aiStatus === "loading" ? "Coach is reviewing…" : "Ask the AI coach"}
+              {aiStatus === "loading" ? "Coach is reviewing…" : "Get one coaching hint"}
             </button>
           </div>
-          {aiFeedback && <div className={`code-lab-ai-feedback ${aiStatus === "error" ? "is-error" : ""}`} aria-live="polite"><strong>{aiStatus === "error" ? "Coach unavailable" : "Coach feedback"}</strong><p>{aiFeedback}</p></div>}
+          {aiFeedback && <div className={`code-lab-ai-feedback ${aiStatus === "error" ? "is-error" : ""}`} aria-live="polite"><strong>{aiStatus === "error" ? "Coach unavailable" : "Your next hint"}</strong><p>{aiFeedback}</p></div>}
         </aside>
       </div>
 
@@ -617,10 +618,10 @@ export function CodeLab({
         .code-lab-help-actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 18px; }
         .code-lab-hint { border-color: #c9d5dd; background: #fff; color: #20455f; }
         .code-lab-ai { background: #1769aa; color: #fff; }
-        .code-lab-ai-feedback { margin-top: 15px; padding: 14px; border-left: 3px solid #1769aa; background: #edf6fc; color: #294b63; }
+        .code-lab-ai-feedback { margin-top: 15px; padding: 17px 18px; border: 1px solid #b8d5e3; border-left: 4px solid #1769aa; border-radius: 7px 14px 8px 11px; background: #f3f9fc; color: #294b63; font-family: var(--font-body), Arial, sans-serif; }
         .code-lab-ai-feedback.is-error { border-left-color: #a96e16; background: #fff8e8; }
-        .code-lab-ai-feedback strong { font-size: .8rem; }
-        .code-lab-ai-feedback p { margin: 5px 0 0; white-space: pre-wrap; font-size: .84rem; }
+        .code-lab-ai-feedback strong { display: block; color: #174a68; font-family: var(--font-body), Arial, sans-serif; font-size: .77rem; font-weight: 850; letter-spacing: .07em; text-transform: uppercase; }
+        .code-lab-ai-feedback p { margin: 8px 0 0; white-space: pre-wrap; font-family: var(--font-body), Arial, sans-serif; font-size: .94rem; line-height: 1.65; letter-spacing: 0; }
         .code-lab button:focus-visible, .code-lab select:focus-visible, .code-lab textarea:focus-visible, .code-lab input:focus-visible { outline: 3px solid rgba(79, 166, 220, .38); outline-offset: 2px; }
 
         @media (max-width: 920px) {

@@ -50,7 +50,7 @@ export function LessonExperience({ lesson, track, previous, next }) {
             <div className="lesson-breadcrumb"><Link href="/learn">Courses</Link><span>/</span><span>{track.shortTitle}</span><span>/</span><span>Lesson {lesson.week}</span></div>
             <p className="eyebrow">Lesson {lesson.week} of {track.count}</p><h1>{lesson.title}</h1>
             <LessonLanguageSwitcher summary={lesson.summary} summarySw={lesson.summarySw} summaryFr={lesson.summaryFr} translationStatus={lesson.translationStatus} />
-            <div className="lesson-heading-meta"><span>{lesson.video ? `${lesson.video.durationLabel} lecture` : formatDuration(lesson.duration)}</span><span>{lesson.level}</span><span>{lesson.video ? `${lesson.video.chapters.length} video chapters` : "Detailed notes"}</span><span>1 project + {lesson.quiz.length} questions</span></div>
+            <div className="lesson-heading-meta"><span>{lesson.video ? `${lesson.video.durationLabel} lecture` : formatDuration(lesson.duration)}</span><span>{lesson.level}</span><span>{lesson.video ? `${lesson.video.chapters.length} video chapters` : "Detailed notes"}</span><span>{lesson.flashcards.length} flashcards + {lesson.quiz.length} questions</span></div>
             {lesson.video && <div className="lesson-source-banner"><span>Official Binary Tree upload</span><strong>{lesson.video.title}</strong><small>Published {lesson.video.publishedAt} · embedded with chapters, checkpoints, deep notes, and a project</small></div>}
           </header>
 

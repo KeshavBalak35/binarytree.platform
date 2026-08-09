@@ -119,8 +119,8 @@ export function ProgressTree({ tracks }) {
       <div className="progress-overview">
         <div className="progress-copy">
           <p className="progress-kicker">Your learning tree</p>
-          <h2 id="progress-tree-title">Every finished step adds some color.</h2>
-          <p>Video checkpoints, quizzes, projects, and completed lessons all contribute. Your progress stays on this device.</p>
+          <h2 id="progress-tree-title">Every finished step grows a new branch.</h2>
+          <p>Video checkpoints grow twigs, quizzes add leaves, and finished projects extend each course branch. Your progress stays on this device.</p>
           <div className="overall-meter">
             <div><strong>{summary.overall}%</strong><span>overall progress</span></div>
             <progress value={summary.overall} max="100" aria-label={`${summary.overall}% overall curriculum progress`}>{summary.overall}%</progress>
@@ -128,28 +128,35 @@ export function ProgressTree({ tracks }) {
           </div>
         </div>
 
-        <div className="tree-art" aria-hidden="true" style={{ "--overall": `${summary.overall}%` }}>
+        <div className="tree-art" aria-hidden="true">
           <span className="tree-sun" />
-          <div className="tree-canopy tree-canopy-one" />
-          <div className="tree-canopy tree-canopy-two" />
-          <div className="tree-canopy tree-canopy-three" />
-          <div className="tree-trunk"><span /></div>
-          <div className="tree-ground"><span /></div>
-          <div className="tree-branch-dots">
-            {summary.tracks.map((track, index) => (
-              <span
-                className="tree-branch-dot"
-                data-side={index % 2 ? "right" : "left"}
-                key={track.slug}
-                style={{
-                  "--branch-top": `${(index % 4) * 21}%`,
-                  "--branch-offset": `${(index % 3) * 14}%`,
-                  "--branch-color": ACCENTS[track.color] || ACCENTS.blue,
-                  "--branch-opacity": Math.max(0.18, track.percent / 100),
-                }}
-              />
-            ))}
+          <span className="tree-ground tree-ground-back" />
+          <span className="tree-trunk-main" />
+          <span className="tree-trunk-root tree-root-left" />
+          <span className="tree-trunk-root tree-root-right" />
+          <div className="growth-branches">
+            {summary.tracks.map((track, index) => {
+              const twigCount = Math.min(4, Math.ceil(track.percent / 25));
+              const leafCount = Math.min(5, track.completeCount + (track.startedCount > track.completeCount ? 1 : 0));
+              return (
+                <span
+                  className="growth-branch"
+                  data-side={index % 2 ? "right" : "left"}
+                  key={track.slug}
+                  style={{
+                    "--branch-y": `${38 + index * 26}px`,
+                    "--branch-reach": `${(track.percent ? 44 + track.percent * 0.72 : 0)}px`,
+                    "--branch-color": ACCENTS[track.color] || ACCENTS.blue,
+                  }}
+                >
+                  <i className="growth-bough" />
+                  {[0, 1, 2, 3].slice(0, twigCount).map((twig) => <i className={`growth-twig twig-${twig + 1}`} key={twig} />)}
+                  {[0, 1, 2, 3, 4].slice(0, leafCount).map((leaf) => <i className={`growth-leaf leaf-${leaf + 1}`} key={leaf} />)}
+                </span>
+              );
+            })}
           </div>
+          <span className="tree-ground tree-ground-front" />
         </div>
       </div>
 
@@ -157,14 +164,14 @@ export function ProgressTree({ tracks }) {
         <ContextCard
           eyebrow={summary.recent ? `Recent · ${safeDateLabel(summary.recent.updatedAt)}` : "Recent activity"}
           lesson={summary.recent}
-          empty={{ title: "Nothing here yet—and that is okay.", copy: "Choose one lesson and your first branch will begin to fill." }}
+          empty={{ title: "Nothing here yet—and that is okay.", copy: "Choose one lesson and your first branch will begin to grow." }}
           state={state}
           actionLabel="Continue lesson"
         />
         <ContextCard
           eyebrow="Up next"
           lesson={summary.upNext}
-          empty={{ title: "Your tree is fully colored.", copy: "You have completed every lesson currently in the curriculum." }}
+          empty={{ title: "Your learning tree is fully grown.", copy: "You have completed every lesson currently in the curriculum." }}
           state={state}
           actionLabel={summary.upNext?.started ? "Keep going" : "Start this lesson"}
         />
@@ -225,20 +232,29 @@ export function ProgressTree({ tracks }) {
         progress::-webkit-progress-value { border-radius: 999px; background: linear-gradient(90deg, #337b98, #4a9a6d); }
         progress::-moz-progress-bar { border-radius: 999px; background: linear-gradient(90deg, #337b98, #4a9a6d); }
 
-        .tree-art { position: relative; min-height: 370px; filter: drop-shadow(0 18px 20px rgba(29, 73, 73, .14)); }
-        .tree-sun { position: absolute; top: 14px; right: 16px; width: 65px; height: 61px; border-radius: 48% 52% 44% 56%; background: #f4cf6c; opacity: .8; transform: rotate(8deg); }
-        .tree-canopy { position: absolute; z-index: 2; border: 2px solid rgba(25, 83, 77, .3); background: color-mix(in srgb, #4e9b72 var(--overall), #d6e8e1); transition: background .35s ease; }
-        .tree-canopy-one { top: 28px; left: 15%; width: 68%; height: 178px; border-radius: 47% 53% 42% 58% / 53% 45% 55% 47%; transform: rotate(-4deg); }
-        .tree-canopy-two { top: 103px; left: 2%; width: 58%; height: 142px; border-radius: 55% 45% 62% 38% / 45% 58% 42% 55%; transform: rotate(7deg); }
-        .tree-canopy-three { top: 93px; right: 0; width: 56%; height: 153px; border-radius: 43% 57% 39% 61% / 62% 44% 56% 38%; transform: rotate(-7deg); }
-        .tree-trunk { position: absolute; bottom: 38px; left: 46%; z-index: 1; width: 50px; height: 175px; overflow: hidden; border: 2px solid #775c43; border-radius: 48% 52% 17px 13px; background: #d4b994; transform: rotate(1.5deg); }
-        .tree-trunk span { position: absolute; right: 0; bottom: 0; left: 0; height: var(--overall); background: #8a694a; transition: height .35s ease; }
-        .tree-ground { position: absolute; right: 4%; bottom: 24px; left: 2%; height: 32px; border-bottom: 3px solid #39785a; border-radius: 50%; transform: rotate(-1deg); }
-        .tree-ground span { position: absolute; right: 24%; bottom: -9px; width: 39%; height: 18px; border-bottom: 2px solid #75a586; border-radius: 50%; }
-        .tree-branch-dots { position: absolute; inset: 55px 12% 125px; z-index: 3; }
-        .tree-branch-dot { position: absolute; top: var(--branch-top); width: 31px; height: 24px; border: 2px solid rgba(23, 62, 83, .28); border-radius: 63% 37% 58% 42%; background: var(--branch-color); opacity: var(--branch-opacity); }
-        .tree-branch-dot[data-side="left"] { left: var(--branch-offset); transform: rotate(-19deg); }
-        .tree-branch-dot[data-side="right"] { right: var(--branch-offset); transform: rotate(22deg); }
+        .tree-art { position: relative; min-height: 390px; filter: drop-shadow(0 16px 17px rgba(29, 73, 73, .15)); }
+        .tree-sun { position: absolute; top: 19px; right: 18px; width: 66px; height: 62px; border-radius: 48% 52% 44% 56%; background: #f4cf6c; opacity: .82; transform: rotate(8deg); }
+        .tree-trunk-main { position: absolute; bottom: 47px; left: calc(50% - 18px); width: 39px; height: 236px; border: 2px solid #644932; border-radius: 54% 46% 18px 13px / 23% 21% 11px 10px; background: linear-gradient(90deg,#826044 0 24%,#b28a61 25% 68%,#77553c 69%); transform: rotate(1deg); z-index: 2; }
+        .tree-trunk-main::before,.tree-trunk-main::after { position: absolute; left: 8px; width: 15px; height: 2px; border-radius: 50%; background: rgba(75,49,31,.38); content: ""; transform: rotate(-16deg); }
+        .tree-trunk-main::before { top: 62px; }.tree-trunk-main::after { top: 151px; }
+        .tree-trunk-root { position: absolute; bottom: 42px; left: 50%; width: 72px; height: 17px; border-bottom: 9px solid #79583e; border-radius: 50%; z-index: 1; }
+        .tree-root-left { transform: translateX(-67px) rotate(-11deg); }.tree-root-right { transform: translateX(-5px) rotate(11deg); }
+        .tree-ground { position: absolute; right: 2%; left: 1%; border-radius: 50%; }
+        .tree-ground-back { bottom: 26px; height: 43px; border-bottom: 4px solid #39785a; background: rgba(120,173,132,.16); }
+        .tree-ground-front { right: 17%; bottom: 15px; left: 20%; height: 25px; border-bottom: 3px solid #75a586; transform: rotate(-1deg); }
+        .growth-branches { position: absolute; inset: 27px 0 75px; z-index: 3; }
+        .growth-branch { position: absolute; bottom: var(--branch-y); left: 50%; width: var(--branch-reach); height: 72px; transform-origin: left bottom; }
+        .growth-branch[data-side="left"] { transform: scaleX(-1) rotate(-3deg); }
+        .growth-branch[data-side="right"] { transform: translateX(3px) rotate(-5deg); }
+        .growth-bough { position: absolute; bottom: 0; left: -2px; width: 100%; height: 42px; border-top: clamp(5px, .65vw, 9px) solid #75533b; border-radius: 57% 43% 0 0; transform: rotate(-14deg); transform-origin: left bottom; }
+        .growth-bough::after { position: absolute; top: -5px; right: -4px; width: 10px; height: 8px; border-radius: 60%; background: #75533b; content: ""; }
+        .growth-twig { position: absolute; width: 38%; height: 30px; border-top: 4px solid #75533b; border-radius: 55%; transform-origin: left center; }
+        .twig-1 { bottom: 24px; left: 27%; transform: rotate(-39deg); }.twig-2 { bottom: 31px; left: 48%; transform: rotate(-52deg); }
+        .twig-3 { bottom: 17px; left: 60%; transform: rotate(21deg); }.twig-4 { bottom: 27px; left: 75%; transform: rotate(-34deg); }
+        .growth-leaf { position: absolute; width: 24px; height: 15px; border: 2px solid color-mix(in srgb,var(--branch-color) 70%,#315d4b); border-radius: 72% 28% 68% 32% / 61% 42% 58% 39%; background: color-mix(in srgb,var(--branch-color) 72%,#cbe4cf); }
+        .leaf-1 { right: 0; bottom: 41px; transform: rotate(-16deg); }.leaf-2 { left: 31%; bottom: 48px; transform: rotate(27deg); }
+        .leaf-3 { left: 51%; bottom: 62px; transform: rotate(-22deg); }.leaf-4 { left: 68%; bottom: 18px; transform: rotate(19deg); }
+        .leaf-5 { right: 9%; bottom: 62px; transform: rotate(-35deg); }
 
         .progress-context { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; margin: 28px 0 48px; }
         .context-card { position: relative; min-height: 220px; padding: 27px 29px; border: 1px solid #b8d0d3; border-radius: 9px 19px 10px 16px; background: #fff; box-shadow: 3px 4px 0 rgba(26, 68, 80, .08); }

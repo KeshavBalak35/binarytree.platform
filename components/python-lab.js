@@ -189,7 +189,7 @@ export function PythonLab({ projectId = "python-opportunity", lessonSlug = "", e
       const response = await fetch("/api/ai/code-feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ projectId: project.id, title: project.title, description: project.description, language: "python", files: { python: code }, results }),
+        body: JSON.stringify({ projectId: project.id, title: project.title, description: project.description, language: "python", files: { python: code }, results, hintLevel: hintCount + 1 }),
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.error || "The AI coach is unavailable right now.");
@@ -227,7 +227,7 @@ export function PythonLab({ projectId = "python-opportunity", lessonSlug = "", e
         <section><div className="python-result-heading"><div><span className="code-lab-kicker">Deterministic checks</span><h3>Prove the behavior</h3></div>{results.length > 0 && <strong className={completion === 100 ? "is-complete" : ""}>{completion}%</strong>}</div>
           {results.length ? <ul className="python-results" aria-live="polite">{results.map((result) => <li className={result.passed ? "is-passed" : ""} key={result.id}><span>{result.passed ? "✓" : "→"}</span><div><strong>{result.title}</strong>{!result.passed && <p>{result.failure}{result.actual ? ` Actual: ${result.actual}` : ""}</p>}</div></li>)}</ul> : <p>Predict first, run the program, then check normal, boundary, and invalid inputs.</p>}
         </section>
-        <aside><span className="code-lab-kicker">Coaching ladder</span><h3>Get unstuck without losing the work</h3>{hintCount > 0 && <ol>{project.hints.slice(0, hintCount).map((hint) => <li key={hint}>{hint}</li>)}</ol>}<div><button type="button" onClick={() => setHintCount((count) => Math.min(count + 1, project.hints.length))} disabled={hintCount >= project.hints.length}>{hintCount ? "Another hint" : "Show a hint"}</button><button type="button" onClick={askCoach} disabled={aiStatus === "loading"}>{aiStatus === "loading" ? "Coach is reviewing…" : "Ask the AI coach"}</button></div>{aiFeedback && <div className={`python-ai-feedback ${aiStatus === "error" ? "is-error" : ""}`} aria-live="polite"><strong>{aiStatus === "error" ? "Coach unavailable" : "Coach feedback"}</strong><p>{aiFeedback}</p></div>}</aside>
+        <aside><span className="code-lab-kicker">Coaching ladder</span><h3>One hint at a time—never the solution</h3>{hintCount > 0 && <ol>{project.hints.slice(0, hintCount).map((hint) => <li key={hint}>{hint}</li>)}</ol>}<div><button type="button" onClick={() => setHintCount((count) => Math.min(count + 1, project.hints.length))} disabled={hintCount >= project.hints.length}>{hintCount ? "Another hint" : "Show a hint"}</button><button type="button" onClick={askCoach} disabled={aiStatus === "loading"}>{aiStatus === "loading" ? "Coach is reviewing…" : "Get one coaching hint"}</button></div>{aiFeedback && <div className={`python-ai-feedback ${aiStatus === "error" ? "is-error" : ""}`} aria-live="polite"><strong>{aiStatus === "error" ? "Coach unavailable" : "Your next hint"}</strong><p>{aiFeedback}</p></div>}</aside>
       </div>
     </section>
   );

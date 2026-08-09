@@ -18,7 +18,7 @@ export default function AssessmentPage() {
           <p className="eyebrow">Pre + post program check-in</p>
           <h1>This is a snapshot,<br /><em>not a judgment.</em></h1>
           <p>Answer from what you know today. Take it once before the program and once after—the difference helps your instructor understand what worked.</p>
-          <div className="assessment-hero-meta"><span>8 scored questions</span><span>1 short reflection</span><span>about 6 minutes</span></div>
+          <div className="assessment-hero-meta"><span>16 scored questions</span><span>8 skill areas</span><span>about 10 minutes</span></div>
         </div>
       </section>
       <section className="assessment-content"><div className="narrow-container"><AssessmentForm /></div></section>

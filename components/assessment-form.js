@@ -7,56 +7,25 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxFFr8a08b-4b
 const QUEUE_KEY = "binarytree-assessment-queue-v1";
 
 const questions = [
-  {
-    id: "q1",
-    prompt: "Which password is safest for an important account?",
-    options: ["Keshav2026", "password123", "A long, unique passphrase", "The same password you use elsewhere"],
-    answer: "A long, unique passphrase",
-  },
-  {
-    id: "q2",
-    prompt: "A message says your account will close unless you click a link now. What should you do first?",
-    options: ["Click quickly", "Forward it to friends", "Verify the sender and visit the official site yourself", "Reply with your password"],
-    answer: "Verify the sender and visit the official site yourself",
-  },
-  {
-    id: "q3",
-    prompt: "In a spreadsheet, what is the box where a row and column meet called?",
-    options: ["A slide", "A cell", "A folder", "A browser"],
-    answer: "A cell",
-  },
-  {
-    id: "q4",
-    prompt: "What does a variable do in a Python program?",
-    options: ["Stores a value with a name", "Connects the computer to Wi-Fi", "Deletes every error", "Changes the keyboard layout"],
-    answer: "Stores a value with a name",
-  },
-  {
-    id: "q5",
-    prompt: "Why should a machine-learning model be tested on data it did not train on?",
-    options: ["To make the file larger", "To check whether it works on new examples", "To hide the labels", "To remove every pattern"],
-    answer: "To check whether it works on new examples",
-  },
-  {
-    id: "q6",
-    prompt: "What helps a reader notice the most important information first?",
-    options: ["Visual hierarchy", "More paragraphs", "Tiny type everywhere", "Using every color equally"],
-    answer: "Visual hierarchy",
-  },
-  {
-    id: "q7",
-    prompt: "What is a useful early step when testing a business idea?",
-    options: ["Build everything before talking to anyone", "Ask potential customers about the problem", "Copy the first competitor", "Spend the full budget on a logo"],
-    answer: "Ask potential customers about the problem",
-  },
-  {
-    id: "q8",
-    prompt: "What is the main benefit of an offline-first learning tool?",
-    options: ["It never needs a device", "Core learning can continue when the connection drops", "It makes every answer correct", "It removes the need to save work"],
-    answer: "Core learning can continue when the connection drops",
-  },
+  { id: "q1", dimension: "Safety", prompt: "Which password is safest for an important account?", options: ["Keshav2026", "password123", "A long, unique passphrase", "The same password you use elsewhere"], answer: "A long, unique passphrase" },
+  { id: "q2", dimension: "Safety", prompt: "A message says your account will close unless you click a link now. What should you do first?", options: ["Click quickly", "Forward it to friends", "Verify the sender and visit the official site yourself", "Reply with your password"], answer: "Verify the sender and visit the official site yourself" },
+  { id: "q3", dimension: "Productivity & data", prompt: "In a spreadsheet, what is the box where a row and column meet called?", options: ["A slide", "A cell", "A folder", "A browser"], answer: "A cell" },
+  { id: "q4", dimension: "Productivity & data", prompt: "Which spreadsheet formula correctly adds cells A1 through A5?", options: ["ADD A1-A5", "=SUM(A1:A5)", "TOTAL(A1,A5)", "A1 plus A5"], answer: "=SUM(A1:A5)" },
+  { id: "q5", dimension: "Coding", prompt: "What does a variable do in a Python program?", options: ["Stores a value with a name", "Connects the computer to Wi-Fi", "Deletes every error", "Changes the keyboard layout"], answer: "Stores a value with a name" },
+  { id: "q6", dimension: "Coding", prompt: "A loop is most useful when a program needs to…", options: ["Repeat a step under a rule", "Change the monitor brightness", "Rename the programming language", "Make every decision automatically"], answer: "Repeat a step under a rule" },
+  { id: "q7", dimension: "AI & models", prompt: "Why should a machine-learning model be tested on data it did not train on?", options: ["To make the file larger", "To check whether it works on new examples", "To hide the labels", "To remove every pattern"], answer: "To check whether it works on new examples" },
+  { id: "q8", dimension: "AI & models", prompt: "What should you do before trusting an AI-generated factual claim?", options: ["Assume confident wording means it is true", "Verify it with reliable evidence", "Share it immediately", "Remove the source"], answer: "Verify it with reliable evidence" },
+  { id: "q9", dimension: "Design", prompt: "What helps a reader notice the most important information first?", options: ["Visual hierarchy", "More paragraphs", "Tiny type everywhere", "Using every color equally"], answer: "Visual hierarchy" },
+  { id: "q10", dimension: "Design", prompt: "What is the strongest mobile website check?", options: ["Shrink the text until it fits", "Complete the key task by touch on a narrow screen", "Hide the navigation", "Assume desktop behavior is enough"], answer: "Complete the key task by touch on a narrow screen" },
+  { id: "q11", dimension: "Entrepreneurship", prompt: "What is a useful early step when testing a business idea?", options: ["Build everything before talking to anyone", "Ask potential customers about the problem", "Copy the first competitor", "Spend the full budget on a logo"], answer: "Ask potential customers about the problem" },
+  { id: "q12", dimension: "Entrepreneurship", prompt: "Which evidence best shows that a solution has value?", options: ["The maker likes the color", "People with the problem use it or ask for it", "It has the longest name", "It copies the market leader"], answer: "People with the problem use it or ask for it" },
+  { id: "q13", dimension: "Research", prompt: "Which source is strongest for a current official requirement?", options: ["An undated repost", "The responsible institution’s current page", "A screenshot without a link", "The first social-media comment"], answer: "The responsible institution’s current page" },
+  { id: "q14", dimension: "Research", prompt: "Two reliable sources disagree. What is the best next move?", options: ["Choose the shorter one", "Compare dates, evidence, and authority", "Ignore both", "Repeat the claim more confidently"], answer: "Compare dates, evidence, and authority" },
+  { id: "q15", dimension: "Offline & collaboration", prompt: "What is the main benefit of an offline-first learning tool?", options: ["It never needs a device", "Core learning can continue when the connection drops", "It makes every answer correct", "It removes the need to save work"], answer: "Core learning can continue when the connection drops" },
+  { id: "q16", dimension: "Offline & collaboration", prompt: "When two learners share one device, which routine keeps both people thinking?", options: ["One person controls every step", "Switch driver and navigator roles", "The faster learner submits alone", "Skip the explanation"], answer: "Switch driver and navigator roles" },
 ];
 
+const DIMENSIONS = [...new Set(questions.map((question) => question.dimension))];
 function readQueue() {
   try {
     return JSON.parse(localStorage.getItem(QUEUE_KEY) || "[]");
@@ -80,7 +49,7 @@ async function sendAssessment(payload) {
 
 function localLearningPlan(score) {
   return {
-    title: score >= 7 ? "Strong foundation—choose a stretch lesson." : score >= 4 ? "You have a useful foundation to build on." : "Start with one small, practical skill.",
+    title: score >= 13 ? "Strong foundation—choose a stretch lesson." : score >= 8 ? "You have a useful foundation to build on." : "Start with one small, practical skill.",
     summary: `You answered ${score} of ${questions.length} scored questions correctly. This is a starting point, not a label.`,
     nextSteps: ["Choose one lesson below.", "Complete its practice activity.", "Use the flashcards and quiz before moving on."],
     recommendations: [],
@@ -142,8 +111,13 @@ export function AssessmentForm() {
     const form = event.currentTarget;
     const data = new FormData(form);
     const answers = Object.fromEntries(questions.map((question) => [question.id, data.get(question.id)]));
-    answers.q9 = data.get("q9");
+    answers.reflection = data.get("reflection");
     const score = questions.reduce((total, question) => total + (answers[question.id] === question.answer ? 1 : 0), 0);
+    const dimensionScores = Object.fromEntries(DIMENSIONS.map((dimension) => {
+      const items = questions.filter((question) => question.dimension === dimension);
+      const correct = items.filter((question) => answers[question.id] === question.answer).length;
+      return [dimension, { correct, total: items.length, percent: Math.round((correct / items.length) * 100) }];
+    }));
     const payload = {
       studentName: data.get("studentName"),
       cohort: data.get("cohort"),
@@ -151,12 +125,13 @@ export function AssessmentForm() {
       score,
       total: questions.length,
       answers,
+      dimensionScores,
       submittedAt: new Date().toISOString(),
     };
     const missedSkills = questions.filter((question) => answers[question.id] !== question.answer).map((question) => question.prompt);
-    const reflection = String(answers.q9 || "");
+    const reflection = String(answers.reflection || "");
 
-    setAssessmentResult({ score, total: questions.length });
+    setAssessmentResult({ score, total: questions.length, dimensionScores });
     setLearningPlan(null);
     setSubmitting(true);
     setStatus("");
@@ -205,6 +180,12 @@ export function AssessmentForm() {
 
   return (
     <div className="assessment-shell" data-reveal>
+      <section className="assessment-roadmap" aria-labelledby="assessment-roadmap-title">
+        <div><span>1</span><strong id="assessment-roadmap-title">Take the baseline</strong><small>Answer from what you know now.</small></div>
+        <div><span>2</span><strong>See your skills map</strong><small>Review eight practical areas.</small></div>
+        <div><span>3</span><strong>Start in the right place</strong><small>Use your private learning plan.</small></div>
+        <div><span>4</span><strong>Retake later</strong><small>Measure growth, not perfection.</small></div>
+      </section>
       <div className={`connection-note ${online ? "is-online" : "is-offline"}`} role="status">
         <span aria-hidden="true">{online ? "●" : "↻"}</span>
         <div><strong>{online ? "Connected" : "Working offline"}</strong><small>{online ? "Your response can be recorded now." : "Submit normally—we will keep it on this device."}</small></div>
@@ -217,7 +198,12 @@ export function AssessmentForm() {
         <section className="assessment-ai-plan" aria-live="polite">
           <div className="assessment-score-orb"><strong>{assessmentResult.score}</strong><span>out of {assessmentResult.total}</span></div>
           <div className="assessment-ai-content">
-            <p className="eyebrow"><span aria-hidden="true">✦</span> Your AI learning plan</p>
+            <p className="eyebrow"><span aria-hidden="true">✦</span> Your skills map + learning plan</p>
+            <div className="assessment-dimension-grid" aria-label="Results by skill area">
+              {Object.entries(assessmentResult.dimensionScores).map(([dimension, result]) => (
+                <div key={dimension}><span><strong>{dimension}</strong><em>{result.correct}/{result.total}</em></span><progress value={result.percent} max="100">{result.percent}%</progress></div>
+              ))}
+            </div>
             {coachLoading ? <div className="assessment-ai-loading"><span /><span /><span /> Building a private next-step plan from your results…</div> : learningPlan && (
               <>
                 <h2>{learningPlan.title}</h2>
@@ -247,11 +233,11 @@ export function AssessmentForm() {
         </section>
 
         <section className="assessment-paper assessment-questions">
-          <div className="assessment-section-heading"><span>02</span><div><p className="eyebrow">Eight quick questions</p><h2>Choose the answer that feels right.</h2><p>Do this from what you know today. No searching needed.</p></div></div>
+          <div className="assessment-section-heading"><span>02</span><div><p className="eyebrow">Sixteen quick questions · eight skill areas</p><h2>Choose the answer that feels right.</h2><p>Do this from what you know today. No searching needed.</p></div></div>
           <div className="question-stack">
             {questions.map((question, index) => (
               <fieldset className="assessment-question" key={question.id}>
-                <legend><span>{String(index + 1).padStart(2, "0")}</span>{question.prompt}</legend>
+                <legend><span>{String(index + 1).padStart(2, "0")}</span><span className="assessment-question-copy"><small>{question.dimension}</small>{question.prompt}</span></legend>
                 <div className="answer-options">
                   {question.options.map((option) => (
                     <label key={option}><input type="radio" name={question.id} value={option} required /><span>{option}</span></label>
@@ -264,7 +250,7 @@ export function AssessmentForm() {
 
         <section className="assessment-paper assessment-reflection">
           <div className="assessment-section-heading"><span>03</span><div><p className="eyebrow">One last thought</p><h2>What would progress look like for you?</h2></div></div>
-          <label className="form-field"><span className="sr-only">Reflection response</span><textarea name="q9" rows="5" placeholder="For example: I want to feel confident using a spreadsheet on my own…" required /></label>
+          <label className="form-field"><span className="sr-only">Reflection response</span><textarea name="reflection" rows="5" placeholder="For example: I want to feel confident using a spreadsheet on my own…" required /></label>
           <p className="privacy-note"><span aria-hidden="true">⌁</span> If you submit offline, this response—including your name—stays in this browser until it can sync. Use a private device when possible.</p>
           <button className="button button-primary assessment-submit" type="submit" disabled={submitting}>{submitting ? "Saving your response…" : "Submit assessment"}<span aria-hidden="true">↗</span></button>
         </section>

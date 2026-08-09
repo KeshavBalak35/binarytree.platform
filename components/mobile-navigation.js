@@ -9,12 +9,12 @@ const navigationGroups = [
   {
     label: "Learn and practice",
     links: [
+      { href: "/assessment", label: "Start with the assessment", detail: "Do this before your first lesson" },
       { href: "/learn", label: "Courses", detail: "Browse every learning track" },
       { href: "/lab", label: "Project Library", detail: "One practical project for every lesson" },
       { href: "/progress", label: "Progress tree", detail: "See every checkpoint grow your tree" },
       { href: "/typing", label: "Typing practice", detail: "Build speed with Key Quest" },
       { href: "/study", label: "Study tools", detail: "Notes, flashcards, and quizzes" },
-      { href: "/assessment", label: "Skills assessment", detail: "Check what you already know" },
     ],
   },
   {
@@ -27,7 +27,6 @@ const navigationGroups = [
     ],
   },
 ];
-
 export function MobileNavigation() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
