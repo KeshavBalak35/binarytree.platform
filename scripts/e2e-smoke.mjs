@@ -106,7 +106,7 @@ try {
   await page.getByRole("button", { name: "Kiswahili", exact: true }).click();
   check("Language switcher replaces the visible overview", (await page.locator(".lesson-language-copy p").innerText()).trim() !== englishOverview);
   check("Detailed video lesson includes four or more deep-dive sections", await page.locator(".lecture-guide-section").count() >= 4, String(await page.locator(".lecture-guide-section").count()));
-  check("Lesson gives one five-step route", await page.locator(".lesson-route li").count() === 5, String(await page.locator(".lesson-route li").count()));
+  check("Lesson gives one four-stage route", await page.locator(".lesson-route li").count() === 4, String(await page.locator(".lesson-route li").count()));
   await noHorizontalOverflow(page, "Desktop lesson");
 
   await page.getByRole("tab", { name: "Flashcards" }).click();
@@ -194,7 +194,7 @@ try {
 
   await page.goto(`${baseURL}${lessonHref}`, { waitUntil: "networkidle" });
   check("Mobile lesson replaces sidebar with course disclosure", await page.locator(".lesson-mobile-outline").isVisible() && !await page.locator(".lesson-sidebar").isVisible());
-  check("Phone lesson route stacks into readable steps", await page.locator(".lesson-route li").count() === 5, String(await page.locator(".lesson-route li").count()));
+  check("Phone lesson route stacks into four readable stages", await page.locator(".lesson-route li").count() === 4, String(await page.locator(".lesson-route li").count()));
   await noHorizontalOverflow(page, "390px lesson");
 
   await page.setViewportSize({ width: 360, height: 800 });
@@ -219,10 +219,16 @@ try {
     return { scope: active.scope, caches: await caches.keys() };
   });
   check("PWA service worker is active", registration.scope === `${baseURL}/`, registration.scope);
-  check("Offline curriculum cache is current", registration.caches.some((name) => name.startsWith("binarytree-v7")), registration.caches.join(", "));
+  check("Offline curriculum cache is current", registration.caches.some((name) => name.startsWith("binarytree-v8")), registration.caches.join(", "));
   check("Typing route is cached for offline use", await page.evaluate(async () => Boolean(await caches.match("/typing"))));
   check("Assessment route is cached for offline use", await page.evaluate(async () => Boolean(await caches.match("/assessment"))));
   check("Team and partners routes are cached for offline use", await page.evaluate(async () => Boolean(await caches.match("/team")) && Boolean(await caches.match("/partners"))));
+  const offlineProjects = await page.evaluate(async () => {
+    const routes = await fetch("/offline-projects.json").then((response) => response.json());
+    const matches = await Promise.all(routes.map((route) => caches.match(route)));
+    return { total: routes.length, missing: matches.filter((match) => !match).length };
+  });
+  check("All 42 lesson projects are cached for offline use", offlineProjects.total === 42 && offlineProjects.missing === 0, JSON.stringify(offlineProjects));
   await page.reload({ waitUntil: "networkidle" });
   check("Page is controlled by the service worker", await page.evaluate(() => Boolean(navigator.serviceWorker.controller)));
 
@@ -231,6 +237,8 @@ try {
   await context.setOffline(true);
   await page.reload({ waitUntil: "domcontentloaded", timeout: 20_000 });
   check("Cached lesson opens offline", await page.locator(".lesson-heading h1").isVisible());
+  await page.goto(`${baseURL}/lab/digital-01-orientation`, { waitUntil: "domcontentloaded", timeout: 20_000 });
+  check("Cached lesson project opens offline", await page.getByRole("heading", { level: 1, name: "Build your digital learning map" }).isVisible());
   await page.goto(`${baseURL}/typing`, { waitUntil: "domcontentloaded", timeout: 20_000 });
   check("Typing practice opens offline", await page.getByRole("heading", { name: "Choose your challenge" }).isVisible());
   await context.setOffline(false);

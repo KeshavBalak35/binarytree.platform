@@ -15,7 +15,7 @@ export function SiteFooter() {
         <div>
           <h2>Learn</h2>
           <Link href="/learn">Course library</Link>
-          <Link href="/lab">Code Lab</Link>
+          <Link href="/lab">Project Library</Link>
           <Link href="/progress">Progress tree</Link>
           <Link href="/typing">Typing practice</Link>
           <Link href="/study">Study companion</Link>

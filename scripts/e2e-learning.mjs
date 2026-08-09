@@ -19,6 +19,7 @@ const pythonSlug = "professional-06-python-introduction";
 const video = getVideoCurriculum(lessonSlug);
 const newlyIntegratedVideo = getVideoCurriculum(newlyIntegratedSlug);
 const project = getCodeProject(video.projectId);
+const pythonProject = getCodeProject("python-score-checker");
 const checks = [];
 const runtimeErrors = [];
 
@@ -77,7 +78,7 @@ try {
   check("Lecture map contains every researched chapter", await page.locator(".video-chapter-panel li").count() === video.chapters.length, String(await page.locator(".video-chapter-panel li").count()));
   check("Detailed guide contains multiple deep dives", await page.locator(".lecture-guide-section").count() === video.guide.length && video.guide.length >= 4);
   check("Glossary contains six grounded terms", await page.locator(".lecture-glossary dt").count() === video.glossary.length && video.glossary.length >= 6);
-  check("Lesson launches its mapped project", (await page.locator(".lesson-project-launch").getAttribute("href")) === `/lab/${lessonSlug}`);
+  check("Lesson launches its mapped project", (await page.locator(".lesson-mission").getByRole("link", { name: /Open this project/ }).getAttribute("href")) === `/lab/${lessonSlug}`);
   await page.getByText("Playing from 0:00", { exact: false }).waitFor();
 
   const checkpoint = video.checkpoints[0];
@@ -94,10 +95,10 @@ try {
   await page.goto(`${baseURL}/learn/${newlyIntegratedSlug}`, { waitUntil: "networkidle" });
   check("Newly integrated Brand lesson uses the official upload", (await page.locator(".lesson-source-banner").innerText()).includes(newlyIntegratedVideo.title));
   check("Newly integrated upload has its complete chapter map", await page.locator(".video-chapter-panel li").count() === newlyIntegratedVideo.chapters.length, String(await page.locator(".video-chapter-panel li").count()));
-  check("Newly integrated upload has deep notes and a five-step route", await page.locator(".lecture-guide-section").count() === newlyIntegratedVideo.guide.length && await page.locator(".lesson-route li").count() === 5);
+  check("Newly integrated upload has deep notes and a four-stage route", await page.locator(".lecture-guide-section").count() === newlyIntegratedVideo.guide.length && await page.locator(".lesson-route li").count() === 4);
 
   await page.goto(`${baseURL}/lab/${lessonSlug}`, { waitUntil: "networkidle" });
-  check("Mapped Code Lab opens", await page.getByRole("heading", { level: 1, name: project.title }).isVisible());
+  check("Mapped project studio opens", await page.getByRole("heading", { level: 1, name: "Build a trustworthy community website" }).isVisible());
   check("Code editor and isolated preview render", await page.locator("#code-lab-editor").isVisible() && await page.locator("iframe[sandbox='allow-scripts']").isVisible());
   await page.getByRole("button", { name: /Check project/ }).click();
   await page.locator(".code-lab-result-list li").first().waitFor();
@@ -127,12 +128,12 @@ try {
   await noHorizontalOverflow(page, "Desktop progress tree");
 
   await page.goto(`${baseURL}/lab/${pythonSlug}`, { waitUntil: "networkidle" });
-  check("Python project studio renders", await page.getByRole("heading", { level: 1, name: /opportunity recommender/i }).isVisible());
-  check("Python editor exposes runnable source", (await page.locator("#python-editor").inputValue()).includes("def recommend"));
+  check("Python project studio renders", await page.getByRole("heading", { level: 1, name: /learner score checker/i }).isVisible());
+  check("Python editor exposes runnable source", (await page.locator("#python-editor").inputValue()).includes("def next_step"));
   if (runPython) {
     await page.getByRole("button", { name: /Check project/ }).click();
     await page.locator(".python-results li").first().waitFor({ timeout: 65_000 });
-    check("Browser Python executed every behavioral test", await page.locator(".python-results li").count() === getCodeProject("python-opportunity").tests.length);
+    check("Browser Python executed every behavioral test", await page.locator(".python-results li").count() === pythonProject.tests.length);
     check("Python checker reports passing and failing behavior", await page.locator(".python-results li.is-passed").count() >= 1 && await page.locator(".python-results li:not(.is-passed)").count() >= 1);
   }
 
@@ -141,7 +142,7 @@ try {
   check("Phone Code Lab editor avoids input zoom", await page.locator("#code-lab-editor").evaluate((node) => getComputedStyle(node).fontSize === "16px"));
   await noHorizontalOverflow(page, "390px Code Lab");
   await page.getByRole("button", { name: "Open navigation" }).click();
-  check("Phone navigation exposes Code Lab", await page.locator(".mobile-navigation-panel").getByRole("link", { name: /Code Lab/ }).isVisible());
+  check("Phone navigation exposes the Project Library", await page.locator(".mobile-navigation-panel").getByRole("link", { name: /Project Library/ }).isVisible());
   check("Phone navigation exposes progress", await page.locator(".mobile-navigation-panel").getByRole("link", { name: /Progress/ }).isVisible());
 
   await page.goto(`${baseURL}/lab/${pythonSlug}`, { waitUntil: "networkidle" });

@@ -1,4 +1,5 @@
 import "./globals.css";
+import "./curriculum-v2.css";
 import "./handmade.css";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { AppChrome } from "@/components/app-chrome";

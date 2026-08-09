@@ -9,7 +9,7 @@ export const maxDuration = 45;
 const SITE_PAGES = [
   { href: "/", label: "Binary Tree home", purpose: "Overview of the free, offline-first learning platform." },
   { href: "/learn", label: "Explore courses", purpose: "Browse every course and lesson." },
-  { href: "/lab", label: "Code Lab", purpose: "Build, run, test, and improve hands-on web and Python projects." },
+  { href: "/lab", label: "Project Library", purpose: "Open the matching practical project for any of the 42 lessons, including checked web and Python studios." },
   { href: "/progress", label: "Learning progress", purpose: "See the learning tree, course branches, recent activity, and next lesson." },
   { href: "/study", label: "Study workspace", purpose: "Choose a lesson, ask the grounded tutor, use flashcards, and take a quiz." },
   { href: "/typing", label: "Typing practice", purpose: "Run one-minute typing practice with speed and accuracy feedback." },
@@ -33,7 +33,7 @@ function cleanPathname(value) {
 function currentPageContext(pathname) {
   if (pathname.startsWith("/lab/")) {
     const lesson = getLessonBySlug(pathname.slice("/lab/".length));
-    if (lesson?.project) return `The learner is working in Code Lab on "${lesson.project.title}" for the lesson "${lesson.title}". Project goal: ${lesson.project.description}`;
+    if (lesson?.mission) return `The learner is working on "${lesson.mission.title}" for the lesson "${lesson.title}". Deliverable: ${lesson.mission.deliverable}`;
   }
   if (pathname.startsWith("/learn/")) {
     const lesson = getLessonBySlug(pathname.slice("/learn/".length));
