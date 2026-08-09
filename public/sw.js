@@ -1,5 +1,5 @@
-const CACHE_VERSION = "binarytree-v6-2026-07-27";
-const CORE_ROUTES = ["/", "/learn", "/typing", "/study", "/assessment", "/educators", "/educators/lesson-planner", "/about", "/team", "/partners", "/apply", "/offline", "/manifest.webmanifest", "/app-icon.png", "/btlogo.png"];
+const CACHE_VERSION = "binarytree-v7-2026-08-09";
+const CORE_ROUTES = ["/", "/learn", "/lab", "/progress", "/python-runner.mjs", "/typing", "/study", "/assessment", "/educators", "/educators/lesson-planner", "/about", "/team", "/partners", "/apply", "/offline", "/manifest.webmanifest", "/app-icon.png", "/btlogo.png"];
 
 async function lessonRoutes() {
   try {
@@ -11,6 +11,15 @@ async function lessonRoutes() {
   }
 }
 
+async function projectRoutes() {
+  try {
+    const response = await fetch("/offline-projects.json", { cache: "no-store" });
+    if (!response.ok) return [];
+    return await response.json();
+  } catch {
+    return [];
+  }
+}
 async function warmRoute(cache, route) {
   try {
     const response = await fetch(route, { cache: "reload" });
@@ -32,7 +41,7 @@ async function warmRoute(cache, route) {
 self.addEventListener("install", (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE_VERSION);
-    const routes = [...CORE_ROUTES, ...(await lessonRoutes())];
+    const routes = [...CORE_ROUTES, ...(await lessonRoutes()), ...(await projectRoutes())];
     for (const route of routes) await warmRoute(cache, route);
     await self.skipWaiting();
   })());
@@ -66,7 +75,7 @@ self.addEventListener("fetch", (event) => {
         return response;
       } catch {
         const cache = await caches.open(CACHE_VERSION);
-        return (await cache.match(request)) || (await cache.match(url.pathname)) || (url.pathname.startsWith("/learn") ? await cache.match("/learn") : null) || (await cache.match("/offline"));
+        return (await cache.match(request)) || (await cache.match(url.pathname)) || (url.pathname.startsWith("/learn") ? await cache.match("/learn") : null) || (url.pathname.startsWith("/lab") ? await cache.match("/lab") : null) || (await cache.match("/offline"));
       }
     })());
     return;

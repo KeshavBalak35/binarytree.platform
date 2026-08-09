@@ -8,15 +8,72 @@
   "background_color": "#eef5f7",
   "theme_color": "#163b4d",
   "orientation": "any",
-  "categories": ["education", "productivity"],
+  "categories": [
+    "education",
+    "productivity"
+  ],
   "shortcuts": [
-    { "name": "Course library", "short_name": "Courses", "url": "/learn", "icons": [{ "src": "/app-icon.png", "sizes": "512x512", "type": "image/png" }] },
-    { "name": "Typing practice", "short_name": "Typing", "url": "/typing", "icons": [{ "src": "/app-icon.png", "sizes": "512x512", "type": "image/png" }] },
-    { "name": "Study companion", "short_name": "Study", "url": "/study", "icons": [{ "src": "/app-icon.png", "sizes": "512x512", "type": "image/png" }] },
-    { "name": "Skills assessment", "short_name": "Assessment", "url": "/assessment", "icons": [{ "src": "/app-icon.png", "sizes": "512x512", "type": "image/png" }] }
+    {
+      "name": "Course library",
+      "short_name": "Courses",
+      "url": "/learn",
+      "icons": [
+        {
+          "src": "/app-icon.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Code Lab",
+      "short_name": "Code Lab",
+      "url": "/lab",
+      "icons": [
+        {
+          "src": "/app-icon.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Progress tree",
+      "short_name": "Progress",
+      "url": "/progress",
+      "icons": [
+        {
+          "src": "/app-icon.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Study companion",
+      "short_name": "Study",
+      "url": "/study",
+      "icons": [
+        {
+          "src": "/app-icon.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ]
+    }
   ],
   "icons": [
-    { "src": "/app-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "/app-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "/app-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/app-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }

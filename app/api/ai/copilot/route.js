@@ -9,6 +9,8 @@ export const maxDuration = 45;
 const SITE_PAGES = [
   { href: "/", label: "Binary Tree home", purpose: "Overview of the free, offline-first learning platform." },
   { href: "/learn", label: "Explore courses", purpose: "Browse every course and lesson." },
+  { href: "/lab", label: "Code Lab", purpose: "Build, run, test, and improve hands-on web and Python projects." },
+  { href: "/progress", label: "Learning progress", purpose: "See the learning tree, course branches, recent activity, and next lesson." },
   { href: "/study", label: "Study workspace", purpose: "Choose a lesson, ask the grounded tutor, use flashcards, and take a quiz." },
   { href: "/typing", label: "Typing practice", purpose: "Run one-minute typing practice with speed and accuracy feedback." },
   { href: "/assessment", label: "Skills assessment", purpose: "Take the eight-question pre or post skills check." },
@@ -21,7 +23,7 @@ const SITE_PAGES = [
   { href: "/apply", label: "Apply to join", purpose: "Open the official Binary Tree team application." },
 ];
 
-const NAVIGATION_INTENT = /\b(find|show|take me|open|go to|where|start|recommend|browse|explore|join|apply|course|lesson|tool|study|practice)\b/i;
+const NAVIGATION_INTENT = /\b(find|show|take me|open|go to|where|start|recommend|browse|explore|join|apply|course|lesson|learn|teach|tool|study|practice)\b/i;
 
 function cleanPathname(value) {
   const pathname = String(value || "/").split("?")[0];
@@ -29,6 +31,10 @@ function cleanPathname(value) {
 }
 
 function currentPageContext(pathname) {
+  if (pathname.startsWith("/lab/")) {
+    const lesson = getLessonBySlug(pathname.slice("/lab/".length));
+    if (lesson?.project) return `The learner is working in Code Lab on "${lesson.project.title}" for the lesson "${lesson.title}". Project goal: ${lesson.project.description}`;
+  }
   if (pathname.startsWith("/learn/")) {
     const lesson = getLessonBySlug(pathname.slice("/learn/".length));
     if (lesson) return `The learner is reading "${lesson.title}" in ${lesson.track}. Summary: ${lesson.summary} Learning goals: ${lesson.objectives.join("; ")} Practice activity: ${lesson.activity}`;
@@ -42,6 +48,25 @@ function answerActions(answer, lessons) {
   const paths = (text.match(/\/learn\/[a-z0-9-]+/gi) || []).map((href) => ({ href }));
   const namedLessons = lessons.filter((lesson) => text.toLowerCase().includes(lesson.title.toLowerCase())).map((lesson) => ({ href: `/learn/${lesson.slug}` }));
   return [...paths, ...namedLessons];
+}
+
+const SEARCH_STOP_WORDS = new Set(["a", "an", "and", "begin", "beginning", "course", "for", "from", "i", "learn", "lesson", "me", "of", "start", "the", "to", "want", "with"]);
+
+function navigationFallbackActions(question, lessons) {
+  const normalizedQuestion = String(question || "").toLowerCase();
+  const tokens = [...new Set(normalizedQuestion.match(/[a-z0-9]+/g) || [])].filter((token) => token.length > 1 && !SEARCH_STOP_WORDS.has(token));
+  return lessons
+    .map((lesson, index) => {
+      const title = String(lesson.title || "").toLowerCase();
+      const track = String(lesson.track || "").toLowerCase();
+      const summary = String(lesson.summary || "").toLowerCase();
+      const score = tokens.reduce((total, token) => total + (title.includes(token) ? 8 : 0) + (track.includes(token) ? 4 : 0) + (summary.includes(token) ? 2 : 0), 0);
+      return { lesson, score, index };
+    })
+    .filter((item) => item.score > 0)
+    .sort((left, right) => right.score - left.score || left.index - right.index)
+    .slice(0, 3)
+    .map(({ lesson }) => ({ href: `/learn/${lesson.slug}`, label: lesson.title, detail: lesson.summary }));
 }
 
 function safeActions(items, lessons) {
@@ -129,6 +154,9 @@ ${partners}`;
     const answer = String(parsed?.answer || "").trim().slice(0, 1800);
     if (!answer) throw new Error("Missing answer");
     let actions = NAVIGATION_INTENT.test(question) ? safeActions([...(Array.isArray(parsed.actions) ? parsed.actions : []), ...answerActions(answer, lessons)], lessons) : [];
+    if (NAVIGATION_INTENT.test(question) && actions.length === 0) {
+      actions = safeActions(navigationFallbackActions(question, lessons), lessons);
+    }
     if (NAVIGATION_INTENT.test(question) && actions.length === 0) {
       try {
         const linkResult = await generateAIText([

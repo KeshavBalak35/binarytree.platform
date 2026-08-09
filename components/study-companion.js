@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { recordQuizProgress } from "@/lib/progress-store";
 
 const LANGUAGE_LABELS = { en: "English", sw: "Kiswahili", fr: "Français" };
 const STARTERS = {
@@ -66,6 +67,7 @@ export function StudyCompanion({ lesson, expanded = false }) {
             summary: lesson.summary,
             keyIdeas: lesson.keyIdeas,
             activity: lesson.activity,
+            lectureGuide: lesson.lectureGuide,
           },
         }),
       });
@@ -85,9 +87,7 @@ export function StudyCompanion({ lesson, expanded = false }) {
     const correct = choiceIndex === activeQuestion.answer;
     const nextScore = score + (correct ? 1 : 0);
     setScore(nextScore);
-    try {
-      localStorage.setItem(`binarytree-quiz-${lesson.slug}`, JSON.stringify({ score: nextScore, answered: quizIndex + 1, updatedAt: new Date().toISOString() }));
-    } catch {}
+        recordQuizProgress(lesson.slug, nextScore, quizIndex + 1, quiz.length);
   };
 
   const nextQuiz = () => {

@@ -10,7 +10,9 @@
     "content:generate": "node scripts/generate-curriculum.mjs",
     "content:check": "node scripts/validate-content.mjs",
     "test:e2e": "node scripts/e2e-smoke.mjs",
-    "test:ai": "node scripts/verify-ai-flows.mjs"
+    "test:ai": "node scripts/verify-ai-flows.mjs",
+    "test:learning": "node scripts/verify-learning-experience.mjs",
+    "test:e2e:learning": "node scripts/e2e-learning.mjs"
   },
   "dependencies": {
     "@next/third-parties": "^16.2.11",

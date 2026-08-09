@@ -119,8 +119,8 @@ try {
   check("Practice quiz gives feedback", await page.locator(".quiz-feedback").isVisible());
   await page.getByRole("button", { name: "Mark lesson complete" }).click();
   check("Lesson progress is saved", await page.getByRole("button", { name: "✓ Lesson complete" }).isVisible());
-  const savedProgress = await page.evaluate(() => JSON.parse(localStorage.getItem("binarytree-progress-v2") || "{}"));
-  check("Progress persisted in local storage", savedProgress && Object.values(savedProgress).some((item) => item.complete === true));
+  const savedProgress = await page.evaluate(() => JSON.parse(localStorage.getItem("binarytree-progress-v3") || "{}"));
+  check("Progress persisted in local storage", Object.values(savedProgress.lessons || {}).some((item) => item.completed === true));
 
   await page.goto(`${baseURL}/typing`, { waitUntil: "networkidle" });
   check("Typing setup exposes three levels", await page.locator(".typing-level").count() === 3, String(await page.locator(".typing-level").count()));
@@ -212,7 +212,7 @@ try {
     return { scope: active.scope, caches: await caches.keys() };
   });
   check("PWA service worker is active", registration.scope === `${baseURL}/`, registration.scope);
-  check("Offline curriculum cache is current", registration.caches.some((name) => name.startsWith("binarytree-v6")), registration.caches.join(", "));
+  check("Offline curriculum cache is current", registration.caches.some((name) => name.startsWith("binarytree-v7")), registration.caches.join(", "));
   check("Typing route is cached for offline use", await page.evaluate(async () => Boolean(await caches.match("/typing"))));
   check("Assessment route is cached for offline use", await page.evaluate(async () => Boolean(await caches.match("/assessment"))));
   check("Team and partners routes are cached for offline use", await page.evaluate(async () => Boolean(await caches.match("/team")) && Boolean(await caches.match("/partners"))));

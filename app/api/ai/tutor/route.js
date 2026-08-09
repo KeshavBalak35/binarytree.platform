@@ -36,6 +36,7 @@ export async function POST(request) {
       `Lesson summary: ${String(lesson.summary).slice(0, 1400)}`,
       `Key ideas: ${JSON.stringify(lesson.keyIdeas || []).slice(0, 3600)}`,
       `Practice activity: ${String(lesson.activity || "").slice(0, 1200)}`,
+      `Detailed lecture guide: ${JSON.stringify(lesson.lectureGuide || []).slice(0, 9000)}`,
     ].join("\n");
 
     const instruction = mode === "simplify"

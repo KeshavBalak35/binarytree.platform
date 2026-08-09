@@ -10,6 +10,8 @@ const navigationGroups = [
     label: "Learn and practice",
     links: [
       { href: "/learn", label: "Courses", detail: "Browse every learning track" },
+      { href: "/lab", label: "Code Lab", detail: "Build, run, check, and improve real projects" },
+      { href: "/progress", label: "Progress tree", detail: "See every checkpoint grow your tree" },
       { href: "/typing", label: "Typing practice", detail: "Build speed with Key Quest" },
       { href: "/study", label: "Study tools", detail: "Notes, flashcards, and quizzes" },
       { href: "/assessment", label: "Skills assessment", detail: "Check what you already know" },
@@ -81,7 +83,7 @@ export function MobileNavigation() {
                 <div className="mobile-navigation-group" key={group.label}>
                   <p>{group.label}</p>
                   {group.links.map((link) => {
-                    const current = pathname === link.href || (link.href === "/learn" && pathname.startsWith("/learn/"));
+                    const current = pathname === link.href || (["/learn", "/lab"].includes(link.href) && pathname.startsWith(`${link.href}/`));
                     return (
                       <Link className={current ? "is-current" : undefined} href={link.href} aria-current={current ? "page" : undefined} onClick={() => setOpen(false)} key={link.href}>
                         <span><strong>{link.label}</strong><small>{link.detail}</small></span>

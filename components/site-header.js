@@ -16,6 +16,8 @@ export function SiteHeader() {
           <span><strong>Binary Tree</strong><small>Useful learning, one step at a time</small></span>
         </Link>
         <nav className="desktop-nav" aria-label="Main navigation">
+          <Link href="/lab">Code Lab</Link>
+          <Link href="/progress">Progress</Link>
           <Link href="/typing">Typing practice</Link>
           <Link href="/assessment">Assessment</Link>
           <Link href="/educators">For educators</Link>
