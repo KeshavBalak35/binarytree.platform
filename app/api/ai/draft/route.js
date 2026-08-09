@@ -33,7 +33,7 @@ Return ONLY valid JSON with these exact keys:
 Keep it simple, encouraging, and appropriate for beginners. The code should be copyable and runnable offline.`;
 
   try {
-    const result = await generateAIText(prompt, { json: true, temperature: 0.1 });
+    const result = await generateAIText(prompt, { json: true, temperature: 0.1, models: ["openai/gpt-oss-20b"] });
     const data = parseAIJson(result.text);
     if (!data.goal || !Array.isArray(data.steps) || !data.checkpoint) throw new Error("Incomplete draft");
     return NextResponse.json({ ...data, offline: false });

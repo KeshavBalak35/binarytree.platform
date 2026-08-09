@@ -70,7 +70,7 @@ Choose exactly three real lessons from the catalog. Never shame the learner or o
 CATALOG
 ${catalogText(lessons)}`;
     try {
-      const result = await generateAIText(prompt, { json: true, temperature: 0.15 });
+      const result = await generateAIText(prompt, { json: true, temperature: 0.15, models: ["openai/gpt-oss-20b"] });
       const parsed = parseAIJson(result.text);
       const recommendations = safeRecommendations(parsed.recommendations, lessons);
       if (!parsed.title || !parsed.summary || !Array.isArray(parsed.nextSteps) || recommendations.length < 2) throw new Error("Incomplete plan");
@@ -96,7 +96,7 @@ ${JSON.stringify(result)}
 Be encouraging but specific. Accuracy matters before speed. Return ONLY valid JSON:
 {"title":"short headline","summary":"two sentences using their actual metrics","nextSteps":["three short actions"],"recommendedLevel":"easy|medium|hard"}`;
   try {
-    const generation = await generateAIText(prompt, { json: true, temperature: 0.15 });
+    const generation = await generateAIText(prompt, { json: true, temperature: 0.15, models: ["openai/gpt-oss-20b"] });
     const parsed = parseAIJson(generation.text);
     const recommendedLevel = ["easy", "medium", "hard"].includes(parsed.recommendedLevel) ? parsed.recommendedLevel : fallback.recommendedLevel;
     if (!parsed.title || !parsed.summary || !Array.isArray(parsed.nextSteps)) throw new Error("Incomplete coach");

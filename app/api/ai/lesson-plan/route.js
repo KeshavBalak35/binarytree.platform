@@ -34,14 +34,16 @@ function fallbackPlan(topic, grade, resources) {
 }
 
 export async function POST(request) {
+  let fallback = null;
   try {
     const body = await request.json();
     const topic = String(body.topic || "").trim().slice(0, 180);
     const grade = String(body.grade || "").trim().slice(0, 80);
     const resources = String(body.resources || "").trim().slice(0, 500);
+    fallback = fallbackPlan(topic, grade, resources);
     if (!topic || !grade) return NextResponse.json({ error: "Topic and grade level are required." }, { status: 400 });
 
-    if (!isAIConfigured()) return NextResponse.json({ plan: fallbackPlan(topic, grade, resources), offline: true });
+    if (!isAIConfigured()) return NextResponse.json({ plan: fallback, offline: true });
 
     const prompt = `You are an expert Binary Tree curriculum designer. Create a complete, practical 60-minute lesson plan about "${topic}" for ${grade}.
 
@@ -65,7 +67,7 @@ Return ONLY valid JSON with exactly these keys:
 }
 The timeline must total exactly 60 minutes and include a warm-up, explicit teaching, demonstration, collaborative practice, an individual exercise, and wrap-up. Keep language concrete and teacher-ready.`;
 
-    const generation = await generateAIText(prompt, { json: true, temperature: 0.1 });
+    const generation = await generateAIText(prompt, { json: true, temperature: 0.1, maxCompletionTokens: 3200, models: ["openai/gpt-oss-20b"] });
     const text = generation.text;
     const match = text.match(/\{[\s\S]*\}/);
     if (!match) throw new Error("invalid response");
@@ -73,6 +75,7 @@ The timeline must total exactly 60 minutes and include a warm-up, explicit teach
     if (!Array.isArray(plan.timeline) || !Array.isArray(plan.objectives) || !plan.exercise) throw new Error("incomplete response");
     return NextResponse.json({ plan, offline: false });
   } catch {
-    return NextResponse.json({ error: "A lesson plan could not be generated right now." }, { status: 503 });
+    if (fallback) return NextResponse.json({ plan: fallback, offline: true });
+    return NextResponse.json({ error: "A valid lesson-plan request is required." }, { status: 400 });
   }
 }

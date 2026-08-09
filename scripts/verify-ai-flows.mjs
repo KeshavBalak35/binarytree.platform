@@ -52,7 +52,8 @@ try {
   check("Team question is answered by Groq", teamPayload.provider === "groq" && Boolean(teamPayload.model), JSON.stringify(teamPayload).slice(0, 300));
   await page.locator(".ai-copilot-message:not(.is-user)").nth(1).waitFor();
   const teamAnswer = await page.locator(".ai-copilot-message:not(.is-user)").nth(1).innerText();
-  check("Team answer identifies Abhijay's complete role", teamAnswer.includes("Director of AI, Open Source and Hackathons"), teamAnswer);
+  const normalizedTeamAnswer = teamAnswer.replace(/\s+/gu, " ");
+  check("Team answer identifies Abhijay's complete role", normalizedTeamAnswer.includes("Director of AI, Open Source and Hackathons"), teamAnswer);
   check("Team answer addresses the subjective question honestly", /smart/i.test(teamAnswer) && /(not enough evidence|cannot judge|can't judge|can’t say|does not provide (?:enough|any) (?:evidence|information)|not possible to judge)/i.test(teamAnswer), teamAnswer);
   check("Direct team answer does not add irrelevant cards", await page.locator(".ai-copilot-actions a").count() === 0, String(await page.locator(".ai-copilot-actions a").count()));
   check("Published team facts do not fall back to an offline label", await page.locator(".ai-copilot-offline").count() === 0);
