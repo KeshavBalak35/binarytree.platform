@@ -1,146 +1,125 @@
 import Link from "next/link";
+import { HomeCourseCard } from "@/components/home-course-card";
+import { LearningNotebook } from "@/components/learning-notebook";
+import { getAllLessons, getTracks } from "@/lib/curriculum";
+import { PARTNERS, TEAM } from "@/lib/organization";
 
-const navy = "#0f1d3a";
-const navy2 = "#16264a";
-const blue = "#2563eb";
-const blueSoft = "#dbeafe";
-const ink = "#0f172a";
-const muted = "#64748b";
-const line = "#e2e8f0";
+export const dynamic = "force-static";
 
-const SVG = ({ children, size = 24 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-    {children}
-  </svg>
-);
+function CheckIcon() {
+  return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg>;
+}
 
-const LogoMark = () => (
-  <img src="/btlogo.png" alt="Binary Tree" width={28} height={28} style={{ borderRadius: 4, display: "block" }} />
-);
+export default function HomePage() {
+  const tracks = getTracks();
+  const lessons = getAllLessons();
+  const totalHours = Math.round(lessons.reduce((total, lesson) => total + lesson.duration, 0) / 60);
 
-const PORTALS = [
-  {
-    href: "/student",
-    icon: (
-      <SVG size={22}>
-        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-      </SVG>
-    ),
-    label: "For students",
-    title: "Learning Platform",
-    sub: "Browse courses, follow lessons, and practice coding. No sign-in needed — works offline too.",
-    cta: "Start learning",
-    accent: blue,
-    accentBg: blueSoft,
-  },
-  {
-    href: "/studio",
-    icon: (
-      <SVG size={22}>
-        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-      </SVG>
-    ),
-    label: "For educators",
-    title: "Curriculum Studio",
-    sub: "Create and publish lessons, manage course structure, and draft content with AI assistance.",
-    cta: "Staff sign in",
-    accent: "#0891b2",
-    accentBg: "#e0f2fe",
-  },
-  {
-    href: "/director",
-    icon: (
-      <SVG size={22}>
-        <line x1="18" y1="20" x2="18" y2="10"/>
-        <line x1="12" y1="20" x2="12" y2="4"/>
-        <line x1="6" y1="20" x2="6" y2="14"/>
-      </SVG>
-    ),
-    label: "For leadership",
-    title: "Founder Portal",
-    sub: "Track impact across hubs, manage team accounts, and view learner growth by country.",
-    cta: "Admin sign in",
-    accent: "#7c3aed",
-    accentBg: "#ede9fe",
-  },
-];
-
-const STATS = [
-  { value: "37K+", label: "Students learning offline" },
-  { value: "10", label: "Countries with active hubs" },
-  { value: "3", label: "Courses available" },
-];
-
-export default function Home() {
   return (
-    <div style={{ background: navy, minHeight: "100vh", display: "flex", flexDirection: "column", fontFamily: "system-ui,sans-serif" }}>
-
-      {/* top bar */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 32px", borderBottom: "0.5px solid #1e3460" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, color: "#fff" }}>
-          <div style={{ width: 36, height: 36, background: "#fff", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", color: navy }}>
-            <LogoMark />
+    <main id="main-content">
+      <section className="hero">
+        <span className="hero-ambient hero-ambient-one" aria-hidden="true" />
+        <span className="hero-ambient hero-ambient-two" aria-hidden="true" />
+        <div className="container hero-grid">
+          <div className="hero-visual" data-reveal><LearningNotebook lessonCount={lessons.length} /></div>
+          <div className="hero-copy" data-reveal>
+            <p className="eyebrow">Learning for real life</p>
+            <h1 className="display-title">Useful skills, <span className="hero-word-highlight">one honest step at a time.</span></h1>
+            <p className="lead">Free lessons in digital literacy, Python, machine learning, and entrepreneurship—made for real people, real classrooms, and internet that does not always cooperate.</p>
+            <div className="hero-actions">
+              <Link className="button button-primary" href="/learn">Start learning <span aria-hidden="true">→</span></Link>
+              <Link className="button button-secondary" href="/educators">For educators</Link>
+            </div>
+            <ul className="hero-benefits" aria-label="Platform benefits">
+              <li><CheckIcon /> Begin without an account</li>
+              <li><CheckIcon /> Keep progress on your device</li>
+              <li><CheckIcon /> Use a phone or shared computer</li>
+            </ul>
           </div>
+        </div>
+      </section>
+
+      <section className="trust-bar" aria-label="Curriculum summary">
+        <div className="container trust-grid" data-reveal>
+          <div><strong>{lessons.length}</strong><span>lessons made to use</span></div>
+          <div><strong>{tracks.length}</strong><span>guided courses</span></div>
+          <div><strong>{totalHours}+</strong><span>hours of learning</span></div>
+          <div><strong>3</strong><span>study languages</span></div>
+        </div>
+      </section>
+
+      <section className="home-section course-section" aria-labelledby="courses-heading">
+        <span className="section-doodle section-doodle-one" aria-hidden="true">✦</span>
+        <span className="section-doodle section-doodle-two" aria-hidden="true">~</span>
+        <div className="container">
+          <div className="section-heading-row" data-reveal>
+            <div><p className="eyebrow">Choose a loose thread</p><h2 className="section-title" id="courses-heading">What do you want to get better at?</h2><p className="section-intro">Pick a path. Wander a little. Come back tomorrow. The lessons will meet you where you are.</p></div>
+            <Link className="text-link" href="/learn">Explore every course <span aria-hidden="true">→</span></Link>
+          </div>
+          <div className="course-grid">{tracks.map((track, index) => <HomeCourseCard key={track.slug} track={track} index={index} />)}</div>
+        </div>
+      </section>
+
+      <section className="home-section home-organization" aria-labelledby="home-organization-heading">
+        <div className="container">
+          <div className="section-heading-row" data-reveal><div><p className="eyebrow">The organization behind the lessons</p><h2 className="section-title" id="home-organization-heading">Built by people. Strengthened by partners.</h2><p className="section-intro">Binary Tree is more than a course library. It is a growing team and partner network working to make practical digital education reachable.</p></div></div>
+          <div className="home-organization-grid">
+            <Link className="home-organization-card home-team-card" href="/team" data-reveal><span className="organization-card-label">Our team</span><strong>{TEAM.length} leaders across education, technology, and international programs</strong><p>Meet the people responsible for the mission and the work.</p><span className="organization-card-link">Meet the team →</span></Link>
+            <Link className="home-organization-card home-partner-card" href="/partners" data-reveal><span className="organization-card-label">Our partners</span><strong>{PARTNERS.length} organizations connecting learning with communities</strong><p>See the schools, nonprofits, and initiatives making delivery possible.</p><span className="organization-card-link">Explore the network →</span></Link>
+            <Link className="home-organization-card home-apply-card" href="/apply" data-reveal><span className="organization-card-label">Join Binary Tree</span><strong>Have a skill that could move the mission forward?</strong><p>Apply directly through the official form on the website.</p><span className="organization-card-link">Start an application →</span></Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="home-section assessment-invitation" aria-labelledby="assessment-invitation-heading">
+        <div className="container assessment-invitation-inner" data-reveal>
+          <span className="assessment-pencil-note" aria-hidden="true">before + after</span>
           <div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#fff" }}>Binary Tree</div>
-            <div style={{ fontSize: 10, color: "#7e93b8" }}>Offline-first learning</div>
+            <p className="eyebrow">A useful starting point</p>
+            <h2 className="section-title" id="assessment-invitation-heading">See what you know now. Notice what changes.</h2>
+            <p className="section-intro">Take the same short skills check at the beginning and end of your program. If the connection drops, your response waits safely on this device.</p>
+          </div>
+          <Link className="button button-secondary" href="/assessment">Take the skills assessment <span aria-hidden="true">→</span></Link>
+        </div>
+      </section>
+
+      <section className="home-section home-section-soft typing-feature-section" aria-labelledby="typing-heading">
+        <div className="organic-divider organic-divider-top" aria-hidden="true" />
+        <div className="container typing-feature">
+          <div className="typing-feature-copy" data-reveal>
+            <p className="eyebrow">Skill practice</p>
+            <h2 className="section-title" id="typing-heading">Find your rhythm at the keyboard.</h2>
+            <p className="section-intro">Key Quest turns typing practice into a focused one-minute challenge with live speed, accuracy, and personal-best tracking. It works offline too.</p>
+            <Link className="button button-primary" href="/typing">Start typing practice <span aria-hidden="true">→</span></Link>
+          </div>
+          <div className="typing-feature-demo" data-reveal aria-hidden="true">
+            <span className="typing-demo-glow" />
+            <div className="typing-demo-header"><span>KEY QUEST</span><span>00:42</span></div>
+            <div className="typing-demo-metrics"><div><strong>31</strong><span>WPM</span></div><div><strong>97%</strong><span>ACCURACY</span></div></div>
+            <p><span className="typed-text">learning a little </span><mark>e</mark>very day</p>
+            <div className="typing-demo-caret" />
+            <div className="typing-key-row"><span>A</span><span>S</span><span>D</span><span>F</span><span>J</span><span>K</span><span>L</span></div>
           </div>
         </div>
-        <div style={{ fontSize: 11, color: "#7e93b8" }}>binarytree.us</div>
-      </div>
+      </section>
 
-      {/* hero */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "56px 32px 40px" }}>
-        <div style={{ maxWidth: 480, textAlign: "center", marginBottom: 52 }}>
-          <div style={{ display: "inline-block", fontSize: 11, fontWeight: 500, color: "#93b4e8", background: "#1e3460", borderRadius: 20, padding: "5px 14px", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 20 }}>
-            Offline-first · Classroom-ready
+      <section className="home-section approach-section" aria-labelledby="approach-heading">
+        <div className="container approach-grid">
+          <div data-reveal>
+            <p className="eyebrow">A complete learning loop</p>
+            <h2 className="section-title" id="approach-heading">Keep moving, without getting lost.</h2>
+            <p className="section-intro">Every course follows a familiar rhythm, while each activity gives you room to explore.</p>
+            <div className="approach-flourish" aria-hidden="true"><span /><span /><span /></div>
           </div>
-          <h1 style={{ fontSize: 38, fontWeight: 600, color: "#fff", lineHeight: 1.2, margin: "0 0 14px", letterSpacing: "-0.02em" }}>
-            Coding education that keeps going when the internet cannot.
-          </h1>
-          <p style={{ fontSize: 14, color: "#9fb4d6", lineHeight: 1.7, margin: 0 }}>
-            Binary Tree brings digital literacy, Python, and web development to under-resourced classrooms — with cached lessons, a browser-native coding playground, and automatic progress sync.
-          </p>
+          <ol className="approach-list">
+            <li className="approach-item reveal-delay-1" data-reveal><span className="approach-number">1</span><div><small>Understand</small><h3>Learn the idea</h3><p>Read concise notes grounded in the original curriculum lecture.</p></div></li>
+            <li className="approach-item reveal-delay-2" data-reveal><span className="approach-number">2</span><div><small>Experiment</small><h3>Practice it</h3><p>Complete a realistic activity with a phone, paper, or shared computer.</p></div></li>
+            <li className="approach-item reveal-delay-3" data-reveal><span className="approach-number">3</span><div><small>Remember</small><h3>Check your understanding</h3><p>Use flashcards, quizzes, and the lesson-grounded study companion.</p></div></li>
+          </ol>
         </div>
+      </section>
 
-        {/* portal cards */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 14, width: "100%", maxWidth: 800, marginBottom: 48 }}>
-          {PORTALS.map(({ href, icon, label, title, sub, cta, accent, accentBg }) => (
-            <div key={href} style={{ background: "#fff", borderRadius: 14, padding: 24, display: "flex", flexDirection: "column", boxShadow: "0 1px 3px rgba(0,0,0,0.12)" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
-                <div style={{ width: 42, height: 42, background: accentBg, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", color: accent, flexShrink: 0 }}>
-                  {icon}
-                </div>
-                <div>
-                  <div style={{ fontSize: 10, fontWeight: 500, color: muted, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 2 }}>{label}</div>
-                  <div style={{ fontSize: 15, fontWeight: 600, color: ink }}>{title}</div>
-                </div>
-              </div>
-              <div style={{ fontSize: 12, color: muted, lineHeight: 1.65, flex: 1, marginBottom: 18 }}>{sub}</div>
-              <Link href={href} style={{ background: accent, color: "#fff", borderRadius: 8, padding: "10px 16px", fontSize: 12, fontWeight: 500, textDecoration: "none", display: "block", textAlign: "center" }}>
-                {cta} →
-              </Link>
-            </div>
-          ))}
-        </div>
-
-        {/* stats row */}
-        <div style={{ display: "flex", gap: 40, flexWrap: "wrap", justifyContent: "center" }}>
-          {STATS.map(({ value, label }) => (
-            <div key={label} style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 24, fontWeight: 600, color: "#fff" }}>{value}</div>
-              <div style={{ fontSize: 11, color: "#7e93b8", marginTop: 3 }}>{label}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* footer */}
-      <div style={{ padding: "16px 32px", borderTop: "0.5px solid #1e3460", textAlign: "center", fontSize: 11, color: "#4d6490" }}>
-        Binary Tree · Offline-first learning · © 2026
-      </div>
-    </div>
+      <section className="cta-band"><div className="container cta-band-inner" data-reveal><span className="cta-orb cta-orb-one" aria-hidden="true" /><span className="cta-orb cta-orb-two" aria-hidden="true" /><div><p className="eyebrow">Your next step</p><h2>Turn curiosity into a skill.</h2><p>Pick something useful and begin with one focused lesson.</p></div><div className="cta-band-actions"><Link className="button button-light" href="/learn">Explore courses</Link><Link className="button button-outline-light" href="/study">Open study tools</Link></div></div></section>
+    </main>
   );
 }

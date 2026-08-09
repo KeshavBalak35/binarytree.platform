@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase-server";
 import { NextResponse } from "next/server";
 
 export async function POST(request) {
-  const caller = createClient();
+  const caller = await createClient();
   const { data: { user } } = await caller.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 

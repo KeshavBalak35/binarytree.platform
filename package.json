@@ -1,23 +1,39 @@
 {
   "name": "binarytree-platform",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint app components lib",
+    "content:generate": "node scripts/generate-curriculum.mjs",
+    "content:check": "node scripts/validate-content.mjs",
+    "test:e2e": "node scripts/e2e-smoke.mjs",
+    "test:ai": "node scripts/verify-ai-flows.mjs",
+    "test:learning": "node scripts/verify-learning-experience.mjs",
+    "test:e2e:learning": "node scripts/e2e-learning.mjs"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.21.0",
+    "@next/third-parties": "^16.2.11",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.45.4",
-    "next": "14.2.3",
-    "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "gray-matter": "^4.0.3",
+    "next": "16.2.11",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-markdown": "^10.1.0"
   },
   "devDependencies": {
-    "eslint": "^8",
-    "eslint-config-next": "14.2.3"
+    "eslint": "9.39.1",
+    "eslint-config-next": "16.2.11",
+    "playwright-core": "1.62.0"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "overrides": {
+    "postcss": "8.5.23",
+    "sharp": "0.35.3"
   }
 }

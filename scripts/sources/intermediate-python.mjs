@@ -1,0 +1,67 @@
+export const pythonLessons = [
+  {
+    slug: "python-01-fundamentals-review", track: "Intermediate Python", trackSlug: "intermediate-python", week: 1, level: "Intermediate",
+    title: "Python Fundamentals & Best Practices", sourceUrl: "https://docs.google.com/presentation/d/1jogsIZb3Uk6t0iaXplGROOOMKvz6ZAYc/edit", duration: 75,
+    summary: "Review Python’s core types and structures, distinguish representation from meaning, and write readable code with descriptive names, small functions, and predictable behavior.",
+    summarySw: "Pitia aina kuu za data za Python, tofautisha uwasilishaji na maana, na uandike msimbo unaosomeka kwa majina wazi, functions ndogo na tabia inayotabirika.",
+    summaryFr: "Révisez les types de base de Python, distinguez la représentation du sens et écrivez un code lisible avec des noms précis, de petites fonctions et un comportement prévisible.",
+    activity: "Refactor a short script containing unclear names and mixed data types. Add type conversions where needed and split one long block into two focused functions.",
+    topics: [
+      { term: "Type semantics", definition: "The meaning and valid operations associated with a stored value, such as numeric calculation for integers and text operations for strings." },
+      { term: "Type conversion", definition: "Explicitly creating a value of another type, such as int(user_input), when a program needs a different representation." },
+      { term: "Readable code", definition: "Code organized with clear names, consistent formatting, focused functions, and minimal surprise so another person can understand and maintain it." },
+    ],
+  },
+  {
+    slug: "python-02-files-and-data", track: "Intermediate Python", trackSlug: "intermediate-python", week: 2, level: "Intermediate",
+    title: "File Handling & Data Processing", sourceUrl: "https://docs.google.com/presentation/d/1Na2qrUMFi3XpOOXx0rachPoL_97SJHR8/edit", duration: 75,
+    summary: "Read and write files safely, choose CSV for flat tables and JSON for structured data, and use context managers and libraries to avoid data loss.",
+    summarySw: "Soma na uandike faili kwa usalama, chagua CSV kwa jedwali rahisi na JSON kwa data yenye muundo, na tumia context managers na maktaba kuzuia upotevu wa data.",
+    summaryFr: "Lisez et écrivez des fichiers en sécurité, choisissez CSV pour les tableaux plats et JSON pour les données structurées, et utilisez les gestionnaires de contexte pour éviter les pertes.",
+    activity: "Load a small CSV of community resources, calculate a count by category, and save a JSON summary. Handle a missing file without crashing the program.",
+    topics: [
+      { term: "File mode", definition: "The instruction passed to open—such as read, write, or append—that determines what operations are allowed and whether existing content is preserved." },
+      { term: "CSV", definition: "A plain-text format for flat rows and columns that is easy to exchange with spreadsheets but stores values as text." },
+      { term: "JSON", definition: "A text format that preserves nested objects, arrays, numbers, booleans, and text for structured data exchange." },
+    ],
+  },
+  {
+    slug: "python-03-apis", track: "Intermediate Python", trackSlug: "intermediate-python", week: 3, level: "Intermediate",
+    title: "APIs & External Libraries", sourceUrl: "https://docs.google.com/presentation/d/1fb6nc1MjDrGqxh8UoVNYZMlO1d43ZhyD/edit", duration: 75,
+    summary: "Understand request-response communication, use HTTP methods and status codes, parse JSON, and handle timeouts or errors when Python depends on an external service.",
+    summarySw: "Elewa mawasiliano ya ombi na jibu, tumia mbinu za HTTP na status codes, soma JSON na shughulikia muda kuisha au makosa Python inapoutegemea huduma ya nje.",
+    summaryFr: "Comprenez les échanges requête-réponse, utilisez les méthodes HTTP et codes d’état, analysez le JSON et gérez les délais ou erreurs des services externes.",
+    activity: "Read a saved sample API response offline, validate the fields you need, and display one useful result. Then sketch how the program should respond to 404, 429, and 500 errors.",
+    topics: [
+      { term: "API", definition: "A defined interface that lets software systems exchange requests, actions, and data without exposing every internal implementation detail." },
+      { term: "HTTP status code", definition: "A numeric response that communicates whether a request succeeded, failed because of the client, or failed on the server." },
+      { term: "Resilient request", definition: "A network call with a timeout, status checking, validated data, and a useful fallback or error message." },
+    ],
+  },
+  {
+    slug: "python-04-oop", track: "Intermediate Python", trackSlug: "intermediate-python", week: 4, level: "Intermediate",
+    title: "Object-Oriented Programming", sourceUrl: "https://docs.google.com/presentation/d/1QMDGCQQ6Za5MyI2rD2BCM-LcuosjqSen/edit", duration: 75,
+    summary: "Model related data and behavior with classes and objects, initialize unique state through constructors, and use encapsulation, inheritance, and polymorphism intentionally.",
+    summarySw: "Wakilisha data na tabia zinazohusiana kwa classes na objects, anzisha hali ya kila object kwa constructor na tumia encapsulation, inheritance na polymorphism kwa kusudi.",
+    summaryFr: "Modélisez données et comportements avec classes et objets, initialisez l’état par des constructeurs et utilisez encapsulation, héritage et polymorphisme avec intention.",
+    activity: "Design a Course class with title, learner count, and completed lessons. Add methods to record completion and calculate progress, then create two independent course objects.",
+    topics: [
+      { term: "Class", definition: "A blueprint that defines the attributes and methods shared by objects of the same conceptual type." },
+      { term: "Object", definition: "A concrete instance of a class with its own state while using the behavior defined by the class." },
+      { term: "Encapsulation", definition: "Keeping related data and operations together behind a clear interface so internal details can change without breaking callers." },
+    ],
+  },
+  {
+    slug: "python-05-capstone", track: "Intermediate Python", trackSlug: "intermediate-python", week: 5, level: "Intermediate",
+    title: "Capstone: Console Item Lister", sourceUrl: "https://docs.google.com/presentation/d/1JxDWmd5AiTp9icr0TLXmGUI5SJFA6LOH/edit", duration: 90,
+    summary: "Combine OOP, JSON or CSV persistence, reusable functions, dictionaries, console commands, and Matplotlib into a complete item-listing project that can be demonstrated.",
+    summarySw: "Unganisha OOP, kuhifadhi kwa JSON au CSV, functions zinazotumika tena, kamusi, amri za console na Matplotlib katika mradi kamili wa orodha ya bidhaa.",
+    summaryFr: "Combinez POO, persistance JSON ou CSV, fonctions réutilisables, dictionnaires, commandes console et Matplotlib dans un projet complet de gestion d’articles.",
+    activity: "Plan the project before coding: define commands, an Item class, storage format, validation rules, and a chart function. Build and test one thin end-to-end path first.",
+    topics: [
+      { term: "Decomposition", definition: "Breaking a large project into small, testable responsibilities with clear inputs, outputs, and order of implementation." },
+      { term: "Persistence", definition: "Saving application state to a file or database so information remains available after the program stops." },
+      { term: "Data visualization", definition: "Encoding values as a chart so patterns, comparisons, and outliers are easier to understand than in raw records." },
+    ],
+  },
+];

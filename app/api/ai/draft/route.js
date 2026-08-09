@@ -1,17 +1,26 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { generateAIText, isAIConfigured, parseAIJson } from "@/lib/ai-provider";
 import { NextResponse } from "next/server";
 
-export async function POST(request) {
-  if (!process.env.GEMINI_API_KEY) {
-    return NextResponse.json({ error: "AI not configured" }, { status: 503 });
-  }
+export const runtime = "nodejs";
+export const maxDuration = 45;
 
+function fallbackDraft(lessonTitle) {
+  return {
+    goal: `Understand the main idea of ${lessonTitle} and apply it in a small practice task.`,
+    steps: ["Read the example and identify its important parts.", "Follow the process once with guidance.", "Change one detail and explain what happened."],
+    checkpoint: "Explain the idea in your own words and show one working example.",
+    code: "# Add your starter example here\n# Change one detail, run it, and describe the result",
+  };
+}
+
+export async function POST(request) {
   const { lessonTitle, courseTitle, courseCategory } = await request.json();
   if (!lessonTitle) return NextResponse.json({ error: "lessonTitle required" }, { status: 400 });
+  if (!isAIConfigured()) return NextResponse.json({ ...fallbackDraft(lessonTitle), offline: true });
 
   const prompt = `You are a curriculum designer for Binary Tree, an offline-first digital literacy platform for underprivileged communities.
 
-Draft a lesson called "${lessonTitle}" for the course "${courseTitle}" (${courseCategory}).
+Draft a lesson called "${String(lessonTitle).slice(0, 180)}" for the course "${String(courseTitle || "").slice(0, 180)}" (${String(courseCategory || "").slice(0, 100)}).
 
 Return ONLY valid JSON with these exact keys:
 {
@@ -24,15 +33,11 @@ Return ONLY valid JSON with these exact keys:
 Keep it simple, encouraging, and appropriate for beginners. The code should be copyable and runnable offline.`;
 
   try {
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const result = await model.generateContent(prompt);
-    const text = result.response.text();
-    const match = text.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error("No JSON in response");
-    const data = JSON.parse(match[0]);
-    return NextResponse.json(data);
-  } catch (e) {
-    return NextResponse.json({ error: "Draft failed", details: e.message }, { status: 500 });
+    const result = await generateAIText(prompt, { json: true, temperature: 0.1, models: ["openai/gpt-oss-20b"] });
+    const data = parseAIJson(result.text);
+    if (!data.goal || !Array.isArray(data.steps) || !data.checkpoint) throw new Error("Incomplete draft");
+    return NextResponse.json({ ...data, offline: false });
+  } catch {
+    return NextResponse.json({ ...fallbackDraft(lessonTitle), offline: true });
   }
 }
